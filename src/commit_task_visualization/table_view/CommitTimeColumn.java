@@ -1,0 +1,35 @@
+package commit_task_visualization.table_view;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.eclipse.jgit.lib.PersonIdent;
+
+import commit_task_visualization.code_change_extraction.model.CodeSnapShot;
+
+public class CommitTimeColumn extends CommitTableColumn {
+
+	@Override
+	public String getText(Object element) {
+		if (element instanceof CodeSnapShot) {
+			CodeSnapShot codeSnapShot = (CodeSnapShot) element;
+			PersonIdent authorIdent = codeSnapShot.getCommit().getAuthorIdent();
+			Date authorDate = authorIdent.getWhen();
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm");
+			return dateFormat.format(authorDate);  
+		} else
+			return null;
+	}
+
+	@Override
+	public String getTitle() {
+		return "Commit Time";
+	}
+
+	@Override
+	public int getWidth() {
+		return 100;
+	}
+
+}
