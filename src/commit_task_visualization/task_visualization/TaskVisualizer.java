@@ -100,7 +100,7 @@ public class TaskVisualizer extends Display {
 		m_vis.putAction("layout", layout);
 
 		// set up the display
-		setSize(500, 500);
+		setSize(700, 700);
 		pan(250, 250);
 		setHighQuality(true);
 		addControlListener(new TaskVisualizerDragControl());

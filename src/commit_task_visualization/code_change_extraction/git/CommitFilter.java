@@ -46,14 +46,14 @@ public class CommitFilter {
 				if (targetCommit.getId().toString().contains(keyWord)) {
 					System.out.println("Commit MSG:" + commitMsg);
 					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(targetCommit, commit, diffContents));
+					codeChunkList.add(new CodeSnapShot(commit, targetCommit, diffContents));
 				} else if (commitMsg.contains(keyWord)) {
 					System.out.println("Commit MSG:" + commitMsg);
 					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(targetCommit, commit, diffContents));
+					codeChunkList.add(new CodeSnapShot(commit, targetCommit, diffContents));
 				} else if (keyWord.equals(Constants.KEY_WORD_EMPTY)) {
 					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(targetCommit, commit, diffContents));
+					codeChunkList.add(new CodeSnapShot(commit, targetCommit, diffContents));
 				}
 			}
 			// This previous commit is the after version of commit.

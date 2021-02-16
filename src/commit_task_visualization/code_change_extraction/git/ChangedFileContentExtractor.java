@@ -92,15 +92,16 @@ public class ChangedFileContentExtractor {
 		for (Entry<DiffEntry, String> diffEntryContent : diffEntryContents) {
 			DiffEntry diff = diffEntryContent.getKey();
 			ChangeType changeType = diff.getChangeType();
-			// the oldPath is previous file and newPath is current file.
-			String prevChangedFilePath = diff.getOldPath();
+			// This is new file
+			String prevChangedFilePath = diff.getNewPath();
 			String prevVersionSourceCode = null;
 			if (!prevChangedFilePath.equals(diff.DEV_NULL))
-				prevVersionSourceCode = extractChangedFileSourceCode(curCommit, prevChangedFilePath);
-			String curChangedFilePath = diff.getNewPath();
+				prevVersionSourceCode = extractChangedFileSourceCode(prevCommit, prevChangedFilePath);
+			// This is old file			
+			String curChangedFilePath = diff.getOldPath();
 			String curVersionSourceCode = null;
 			if (!curChangedFilePath.equals(diff.DEV_NULL))
-				curVersionSourceCode = extractChangedFileSourceCode(prevCommit, curChangedFilePath);
+				curVersionSourceCode = extractChangedFileSourceCode(curCommit, curChangedFilePath);
 
 			List<ClassPart> curClsParts = new ArrayList<ClassPart>();
 			List<AttributePart> curVersionFieldObjects = new ArrayList<AttributePart>();
