@@ -97,18 +97,19 @@ public class ClassPart implements Serializable {
 				if (javaDoc != null) {
 					classString = classString.replace(javaDoc, "");
 				}
-				Object firstModifier = modifiers.get(0);
-				if (firstModifier instanceof Modifier) {
-					Modifier mod = (Modifier) firstModifier;
-					String modAsString = mod.toString();
-					this.classIdentifier = classString.substring(classString.indexOf(modAsString),
-							classString.indexOf(Constants.START_BLOCK));
-				}
-				if (firstModifier instanceof MarkerAnnotation) {
-					MarkerAnnotation ma = (MarkerAnnotation) firstModifier;
-					String maAsString = ma.toString();
-					this.classIdentifier = classString.substring(classString.indexOf(maAsString),
-							classString.indexOf(Constants.START_BLOCK));
+				for (Object modifier : modifiers) {
+					if (modifier instanceof Modifier) {
+						Modifier mod = (Modifier) modifier;
+						String modAsString = mod.toString();
+						this.classIdentifier = classString.substring(classString.indexOf(modAsString),
+								classString.indexOf(Constants.START_BLOCK+"\n"));
+					}
+//					if (modifier instanceof MarkerAnnotation) {
+//						MarkerAnnotation ma = (MarkerAnnotation) modifier;
+//						String maAsString = ma.toString();
+//						this.classIdentifier = classString.substring(classString.indexOf(maAsString),
+//								classString.indexOf(Constants.START_BLOCK));
+//					}
 				}
 			} else {
 				this.classIdentifier = classString.substring(classString.indexOf(Constants.CLASS_KEY_WORD),

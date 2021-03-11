@@ -1,5 +1,7 @@
 package commit_task_visualization.code_change_extraction;
 
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Frame;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -119,7 +121,7 @@ public class CodeChangeExtractionControl {
 		prevVersionSubCodeChunk.assignConnectedElementsToClassPart();
 
 		List<TaskClass> prevTaskClasses = generateTaskClasses(prevVersionSubCodeChunk, deleted);
-		Task prevTask = new Task(codeSnapShot.getCommit().getId().toString(), prevTaskClasses);
+		Task prevTask = new Task(codeSnapShot.getPrevCommit().getId().toString(), prevTaskClasses);
 		TaskElementUtil.insertTEtoRepo(prevTaskClasses);
 		String prevCommitID = prevTask.getCommitID();
 
@@ -135,7 +137,7 @@ public class CodeChangeExtractionControl {
 		TaskTreeGenerator ttg = new TaskTreeGenerator();
 		List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
 
-		visualize(parent, curCommitID, taskElementHashmap, taskList);
+		visualize(parent, curCommitID, prevCommitID, taskElementHashmap, taskList);
 
 	}
 
@@ -147,25 +149,23 @@ public class CodeChangeExtractionControl {
 		}
 	}
 
-	private void visualize(Composite parent, String curCommitID, HashMap<String, TaskElement> taskElementHashmap,
+	private void visualize(Composite parent, String curCommitID, String prevCommitID, HashMap<String, TaskElement> taskElementHashmap,
 			List<List<TaskElement>> taskList) {
-		tv = new TaskVisualizer(taskElementHashmap, taskList);
+		tv = new TaskVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
 		JPanel panel = tv.showTask();
-		
-		Shell dialog = new Shell(parent.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		dialog.setSize(500, 500);
-		dialog.setText("Task View |" + curCommitID);
+		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
+		shell.setBounds(5, 5, 1000, 1100);
+		shell.setText("Task View |" + curCommitID);
 		System.setProperty("sun.awt.noerasebackground", "true");
-		Composite composite = new Composite(dialog, SWT.EMBEDDED | SWT.NO_BACKGROUND);
-		composite.setBounds(5, 5, 500, 500);
-		Display display = dialog.getDisplay();
+		Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.NO_BACKGROUND);
 		java.awt.Frame frame = SWT_AWT.new_Frame(composite);
+		composite.setBounds(5, 5, 1000, 1100);
 		frame.add(panel);
-		Display.getDefault().syncExec(new Runnable() {
-
+		Display display = shell.getDisplay();
+		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				dialog.open();
+				shell.open();
 			}
 		});
 	}

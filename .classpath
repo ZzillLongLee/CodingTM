@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="Lib/rsyntaxtextarea-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="Lib/commons-collections4-4.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="Lib/logback.jar"/>
 	<classpathentry exported="true" kind="lib" path="Lib/org.eclipse.core.contenttype_3.4.200.v20140207-1251.jar"/>
@@ -14,7 +15,7 @@
 	<classpathentry exported="true" kind="lib" path="Lib/org.eclipse.osgi_3.10.0.v20140606-1445.jar"/>
 	<classpathentry exported="true" kind="lib" path="Lib/prefuse.jar"/>
 	<classpathentry exported="true" kind="lib" path="Lib/slf4j.jar"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" output="target/classes" path="src">
 		<attributes>
 			<attribute name="optional" value="true"/>
@@ -22,7 +23,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

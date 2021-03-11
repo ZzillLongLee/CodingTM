@@ -43,4 +43,5 @@ Bundle-ClassPath: .,
  Lib/org.eclipse.osgi_3.10.0.v20140606-1445.jar,
  Lib/prefuse.jar,
  Lib/slf4j.jar,
- Lib/commons-collections4-4.4.jar
+ Lib/commons-collections4-4.4.jar,
+ Lib/rsyntaxtextarea-2.6.0.jar

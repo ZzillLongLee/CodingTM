@@ -37,7 +37,7 @@ public class TaskVisualizerTest {
 		TaskTreeGenerator ttg = new TaskTreeGenerator();
 		 List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
 		
-		TaskVisualizer tv = new TaskVisualizer(taskElementHashmap, taskList);
+		TaskVisualizer tv = new TaskVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
         JPanel jPanel = tv.showTask();
         jPanel.setVisible(true);
 	}

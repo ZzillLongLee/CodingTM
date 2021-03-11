@@ -37,7 +37,7 @@ public class SourceCodeVisitor extends ASTVisitor {
 	}
 
 	public boolean visit(PackageDeclaration node) {
-		packageName = commitID.trim() + node.getName().getFullyQualifiedName();
+		packageName = commitID.trim()+ " " + node.getName().getFullyQualifiedName();
 		return true;
 	}
 

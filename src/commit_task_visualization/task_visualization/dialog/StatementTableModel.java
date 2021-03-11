@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
+import commit_task_visualization.task_visualization.TaskVisualizer;
 
 
 public class StatementTableModel extends AbstractTableModel {
@@ -76,8 +77,9 @@ public class StatementTableModel extends AbstractTableModel {
 				if (connectedIDs.size() != 0) {
 					for (int i = 0; i < connectedIDs.size(); i++) {
 						String id = connectedIDs.get(i);
+						id = filterCommitID(id);
 						if (i != connectedIDs.size() - 1)
-							sb.append(id + ",");
+							sb.append(id + "\n");
 						else
 							sb.append(id);
 					}
@@ -87,6 +89,16 @@ public class StatementTableModel extends AbstractTableModel {
 		}
 		return temp;
 	}
+
+	private String filterCommitID(String id) {
+		String curID = TaskVisualizer.curCommitID;
+		if(!curID.equals("") && id.contains(curID))
+			id.replace(curID, "");
+		String prevID = TaskVisualizer.prevCommitID;
+		if(!prevID.equals("") && id.contains(prevID))
+			id = id.replace(prevID, "");
+		return id;
+	} 
 
 	public static String[] getColumnNames() {
 		return columnNames;

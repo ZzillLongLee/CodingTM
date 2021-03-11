@@ -25,14 +25,18 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
+
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
 import commit_task_visualization.task_visualization.VisualizationConstants;
 import prefuse.visual.VisualItem;
 
 public class TaskElementDialog {
 
-	private JTextArea pastCodeView;
-	private JTextArea curCodeView;
+	private RSyntaxTextArea pastCodeView;
+	private RSyntaxTextArea curCodeView;
 	private JTable jtable;
 	private JTextField commitIDtextField;
 	private JScrollPane scrollPane;
@@ -53,12 +57,14 @@ public class TaskElementDialog {
 		JPanel commitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 1, 0));
 		Box commitPanelBox = Box.createHorizontalBox();
 		JLabel commitLabel = new JLabel(VisualizationConstants.COMMIT_ID_LABEL);
-		commitLabel.setPreferredSize(new Dimension(60, 25));
+		commitLabel.setPreferredSize(new Dimension(80, 25));
 		commitLabel.setText("Commit ID");
+		commitLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		commitPanelBox.add(commitLabel);
 
 		commitIDtextField = new JTextField();
-		commitIDtextField.setPreferredSize(new Dimension(350, 25));
+		commitIDtextField.setPreferredSize(new Dimension(450, 25));
+		commitIDtextField.setEditable(false);
 		commitPanelBox.add(commitIDtextField);
 		commitPanel.add(commitPanelBox);
 
@@ -71,11 +77,14 @@ public class TaskElementDialog {
 		JLabel pastCodeLabel = new JLabel(VisualizationConstants.COMMIT_ID_LABEL);
 		pastCodeLabel.setPreferredSize(new Dimension(60, 25));
 		pastCodeLabel.setText("Past Code");
+		pastCodeLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		pastCodeBox.add(pastCodeLabel);
 
-		pastCodeView = new JTextArea();
+		pastCodeView = new RSyntaxTextArea();
+		pastCodeView.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+		pastCodeView.setCodeFoldingEnabled(true);
 		pastCVhighlighter = pastCodeView.getHighlighter();
-		JScrollPane pastCodeViewSP = new JScrollPane(pastCodeView);
+		RTextScrollPane pastCodeViewSP = new RTextScrollPane(pastCodeView);
 		pastCodeViewSP.setPreferredSize(new Dimension(450, 300));
 		pastCodeBox.add(pastCodeViewSP);
 
@@ -89,12 +98,15 @@ public class TaskElementDialog {
 		JLabel curCodeLabel = new JLabel(VisualizationConstants.COMMIT_ID_LABEL);
 		curCodeLabel.setPreferredSize(new Dimension(60, 25));
 		curCodeLabel.setText("Current Code");
+		curCodeLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		curCodeBox.add(curCodeLabel);
 
-		curCodeView = new JTextArea();
+		curCodeView = new RSyntaxTextArea();
+		curCodeView.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+		curCodeView.setCodeFoldingEnabled(true);
 		curCVhighlighter = curCodeView.getHighlighter();
 		codePanelBox.add(curCodeView);
-		JScrollPane curCodeViewSP = new JScrollPane(curCodeView);
+		RTextScrollPane curCodeViewSP = new RTextScrollPane(curCodeView);
 		curCodeViewSP.setPreferredSize(new Dimension(450, 300));
 		curCodeBox.add(curCodeViewSP);
 
@@ -115,7 +127,7 @@ public class TaskElementDialog {
 		tablePanel.add(scrollPane);
 	}
 
-	public void drawDialog(VisualItem item) {
+	public void drawDialog(VisualItem item) throws Exception {
 		ItemUtil.setItem(item);
 		String CommitID = ItemUtil.getElementID();
 		commitIDtextField.setText(CommitID);
@@ -126,7 +138,7 @@ public class TaskElementDialog {
 		curCodeView.setText(currentCode);
 		List<TaskStatement> stmts = ItemUtil.getStatements();
 		if (stmts.size() != 0) {
-//			jtable.removeAll();
+			jtable.removeAll();
 			StatementTableModel tableModel = new StatementTableModel(stmts);
 			jtable.setModel(tableModel);
 			teDialog.add(tablePanel, BorderLayout.SOUTH);
@@ -138,30 +150,34 @@ public class TaskElementDialog {
 					pastCVhighlighter.removeAllHighlights();
 					curCVhighlighter.removeAllHighlights();
 
-					String selectedValue = jtable.getValueAt(jtable.getSelectedRow(), jtable.getSelectedColumn())
-							.toString();
-					if (pastCodeView.getText().contains(selectedValue)) {
-						String text = pastCodeView.getText();
-						int index = text.indexOf(selectedValue);
-						DefaultHighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
-								PAST_CODE_COLOR);
-						try {
-							pastCVhighlighter.addHighlight(index, index + selectedValue.length(), painter);
-						} catch (BadLocationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+					Object obj = jtable.getValueAt(jtable.getSelectedRow(), jtable.getSelectedColumn());
+					String selectedValue = null;
+					if (obj != null)
+						selectedValue = obj.toString();
+					if (selectedValue != null) {
+						if (pastCodeView.getText().contains(selectedValue)) {
+							String text = pastCodeView.getText();
+							int index = text.indexOf(selectedValue);
+							DefaultHighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
+									PAST_CODE_COLOR);
+							try {
+								pastCVhighlighter.addHighlight(index, index + selectedValue.length(), painter);
+							} catch (BadLocationException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						}
-					}
-					if (curCodeView.getText().contains(selectedValue)) {
-						String text = curCodeView.getText();
-						int index = text.indexOf(selectedValue);
-						DefaultHighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
-								CURRENT_CODE_COLOR);
-						try {
-							curCVhighlighter.addHighlight(index, index + selectedValue.length(), painter);
-						} catch (BadLocationException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						if (curCodeView.getText().contains(selectedValue)) {
+							String text = curCodeView.getText();
+							int index = text.indexOf(selectedValue);
+							DefaultHighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
+									CURRENT_CODE_COLOR);
+							try {
+								curCVhighlighter.addHighlight(index, index + selectedValue.length(), painter);
+							} catch (BadLocationException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						}
 					}
 				}

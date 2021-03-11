@@ -1,5 +1,9 @@
 package commit_task_visualization.task_visualization;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.eclipse.swt.SWT;
@@ -46,16 +53,31 @@ import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
 
-public class TaskVisualizer extends Display {
+public class TaskVisualizer extends JPanel {
+	public static final String[] legend = { "Feature Implementation", "Feature Improvement", "Refactoring" };
 	public static final String GRAPH = "graph";
 	public static final String NODES = "graph.nodes";
 	public static final String EDGES = "graph.edges";
 	public static final String ARROWS = "graph.arrows";
 	public static final String AGGR = "aggregates";
+	public static final int add_color = ColorLib.rgb(172, 251, 175);
+	public static final int delete_color = ColorLib.rgb(255, 69, 0);
+	public static final int modified_color = ColorLib.rgb(255, 255, 0);
+	public static final int FI_TASK_COLOR = ColorLib.rgb(50,205,50);
+	public static final int FIpro_TASK_COLOR = ColorLib.rgb(246, 204, 255);
+	public static final int RF_TASK_COLOR = ColorLib.rgb(102, 204, 255);
+	public static String curCommitID = "";
+	public static String prevCommitID = "";
+	private Visualization m_vis;
+	private Display m_display;
 
-	public TaskVisualizer(HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList) {
+	public TaskVisualizer(HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList,
+			String curCommitID, String prevCommitID) {
 		// initialize display and data
-		super(new Visualization());
+		super(new BorderLayout());
+		m_vis = new Visualization();
+		this.curCommitID = curCommitID;
+		this.prevCommitID = prevCommitID;
 		initDataGroups(taskElementHashmap, taskList);
 
 		// set up the renderers
@@ -66,8 +88,7 @@ public class TaskVisualizer extends Display {
 		LabelRenderer labelR = new LabelRenderer(VisualizationConstants.TASKELEMENT_LABEL);
 		labelR.setRoundedCorner(20, 20); // round the corners
 
-		EdgeRenderer edgeRenderer = new EdgeRenderer(prefuse.Constants.EDGE_TYPE_CURVE,
-				prefuse.Constants.EDGE_ARROW_FORWARD);
+		EdgeRenderer edgeRenderer = new EdgeRenderer(prefuse.Constants.EDGE_TYPE_CURVE);
 
 		DefaultRendererFactory drf = new DefaultRendererFactory();
 		drf.setDefaultRenderer(labelR);
@@ -83,13 +104,10 @@ public class TaskVisualizer extends Display {
 		ColorAction nEdges = new ColorAction(EDGES, VisualItem.STROKECOLOR);
 		nEdges.setDefaultColor(ColorLib.gray(100));
 
-		ColorAction arrow = new ColorAction(ARROWS, VisualItem.FILLCOLOR, ColorLib.red(400));
-
 		// bundle the color actions
 		ActionList colors = new ActionList();
 		colors.add(nFill);
 		colors.add(nEdges);
-		colors.add(arrow);
 
 		// now create the main layout routine
 		ActionList layout = new ActionList(Activity.INFINITY);
@@ -100,13 +118,15 @@ public class TaskVisualizer extends Display {
 		m_vis.putAction("layout", layout);
 
 		// set up the display
-		setSize(700, 700);
-		pan(250, 250);
-		setHighQuality(true);
-		addControlListener(new TaskVisualizerDragControl());
-		addControlListener(new ZoomControl());
-		addControlListener(new PanControl());
+        m_display = new Display(m_vis);
+        m_display.setPreferredSize(new Dimension(1000, 1000));
+        m_display.pan(500, 500);
+        m_display.setHighQuality(true);
+        m_display.addControlListener(new TaskVisualizerDragControl());
+        m_display.addControlListener(new ZoomControl());
+        m_display.addControlListener(new PanControl());
 
+        add(m_display, BorderLayout.CENTER);
 		// set things running
 		m_vis.run("layout");
 	}
@@ -127,26 +147,13 @@ public class TaskVisualizer extends Display {
 			VisualItem item = (VisualItem) nodes.next();
 			Object obj = item.get(VisualizationConstants.TASKELEMENT);
 			item.setTextColor(ColorLib.rgb(0, 0, 0));
-			if (obj instanceof TaskElement) {
-				TaskElement te = (TaskElement) obj;
-				if (te.getChangedType().equals(InsideClassChangeType.ADD.name())) {
-					item.setStrokeColor(ColorLib.rgb(0, 128, 0));
-					item.setFillColor(ColorLib.rgb(0, 128, 0));
-				}
-				if (te.getChangedType().equals(InsideClassChangeType.DELETE.name())) {
-					item.setStrokeColor(ColorLib.rgb(255, 69, 0));
-					item.setFillColor(ColorLib.rgb(255, 69, 0));
-				}
-				if (te.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
-					item.setStrokeColor(ColorLib.rgb(255, 255, 0));
-					item.setFillColor(ColorLib.rgb(255, 255, 0));
-				}
-			}
+			setTaskElementColor(item, obj);
 		}
 		// add nodes to aggregates
 		AggregateTable at = m_vis.addAggregates(AGGR);
 		at.addColumn(VisualItem.POLYGON, float[].class);
 		at.addColumn("id", int.class);
+		at.addColumn("label", String.class);
 		for (int i = 0; i < taskList.size(); ++i) {
 			AggregateItem aitem = (AggregateItem) at.addItem();
 			aitem.setInt("id", i);
@@ -160,15 +167,34 @@ public class TaskVisualizer extends Display {
 					isTestCase = isTest;
 			}
 			if (isTestCase == true && task.size() > 1) {
-				aitem.setFillColor(ColorLib.rgb(128, 255, 149));
+				aitem.setFillColor(FI_TASK_COLOR);
 				aitem.setStrokeColor(ColorLib.rgb(213, 255, 128));
 			} else if (isTestCase == false && task.size() > 1) {
-				aitem.setFillColor(ColorLib.rgb(246, 204, 255));
-				aitem.setStrokeColor(ColorLib.rgb(128, 255, 212));
-			}
-			else
-				aitem.setFillColor(ColorLib.rgb(102, 204, 255));
+				aitem.setFillColor(FIpro_TASK_COLOR);
+				aitem.setStrokeColor(ColorLib.rgb(255,20,147));
+			} else {
+				aitem.setFillColor(RF_TASK_COLOR);
 				aitem.setStrokeColor(ColorLib.rgb(51, 85, 255));
+			}
+		}
+		addLegend();
+	}
+
+	private void setTaskElementColor(VisualItem item, Object obj) {
+		if (obj instanceof TaskElement) {
+			TaskElement te = (TaskElement) obj;
+			if (te.getChangedType().equals(InsideClassChangeType.ADD.name())) {
+				item.setStrokeColor(add_color);
+				item.setFillColor(add_color);
+			}
+			if (te.getChangedType().equals(InsideClassChangeType.DELETE.name())) {
+				item.setStrokeColor(delete_color);
+				item.setFillColor(delete_color);
+			}
+			if (te.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
+				item.setStrokeColor(modified_color);
+				item.setFillColor(modified_color);
+			}
 		}
 	}
 
@@ -190,7 +216,7 @@ public class TaskVisualizer extends Display {
 			TaskElementNodeRepo taskElementNodeRepo) {
 		List<Node> taskElementNodes = taskElementNodeRepo.getTaskElementNodes();
 		if (!taskElementHashmap.isEmpty()) {
-			if(taskElementNodes.size() != 0) {
+			if (taskElementNodes.size() != 0) {
 				taskElementNodeRepo.emptyNodes();
 			}
 			int i = 0;
@@ -209,6 +235,33 @@ public class TaskVisualizer extends Display {
 				i++;
 			}
 		}
+	}
+	
+	private void addLegend() {
+		
+		Box legendBox = new Box(BoxLayout.X_AXIS);
+		JLabel legendTitlePanel = new JLabel("legend: ");
+		legendTitlePanel.setForeground(Color.black);
+		legendTitlePanel.setFont(new Font("Bold", Font.BOLD, 25));
+		legendBox.add(Box.createHorizontalStrut(16));
+		legendBox.add(legendTitlePanel);
+		JLabel FiLabel = new JLabel(legend[0]+",");
+		FiLabel.setForeground(new Color(50,205,50));
+		FiLabel.setFont(new Font("Bold", Font.BOLD, 25));
+		legendBox.add(Box.createHorizontalStrut(16));
+		legendBox.add(FiLabel);
+		JLabel FIproLabel = new JLabel(legend[1]+",");
+		FIproLabel.setForeground(new Color(246, 204, 255));
+		FIproLabel.setFont(new Font("Bold", Font.BOLD, 25));
+		legendBox.add(Box.createHorizontalStrut(24));
+		legendBox.add(FIproLabel);
+		JLabel RFLabel = new JLabel(legend[2]);
+		RFLabel.setForeground(new Color(102, 204, 255));
+		RFLabel.setFont(new Font("Bold", Font.BOLD, 25));
+		legendBox.add(Box.createHorizontalStrut(16));
+		legendBox.add(RFLabel);
+        add(legendBox, BorderLayout.NORTH);
+		
 	}
 
 	public JPanel showTask() {

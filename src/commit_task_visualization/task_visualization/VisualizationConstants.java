@@ -7,5 +7,6 @@ public class VisualizationConstants {
 	public static final String SPLITMARK = "--";
 	public static final String COMMIT_ID_LABEL = "CommitID";
 	public static final int DOUBLE_CLICK = 2;
+	public static final int CLICK = 1;
 	
 }

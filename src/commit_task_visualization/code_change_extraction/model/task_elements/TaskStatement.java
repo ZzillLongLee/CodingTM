@@ -7,20 +7,30 @@ import java.util.List;
 public class TaskStatement extends TaskElement implements Serializable {
 
 	private List<String> connecteIdList;
+	private String prevID;
+	private String curID;
 
 	public TaskStatement(TaskStatementBuilder taskStatementBuilder) {
 		super(taskStatementBuilder.elementID, taskStatementBuilder.pastCode, taskStatementBuilder.currentCode,
 				taskStatementBuilder.changeType);
 		this.connecteIdList = taskStatementBuilder.connecteIdList;
+		this.prevID = taskStatementBuilder.prevID;
+		this.curID = taskStatementBuilder.curID;
 	}
 
 	public List<String> getconnecteIdList() {
 		return connecteIdList;
 	}
 
-	public void setconnecteIdList(List<String> connecteIdList) {
-		this.connecteIdList = connecteIdList;
+	public String getPrevID() {
+		return prevID;
 	}
+
+	public String getCurID() {
+		return curID;
+	}
+
+
 
 	public static class TaskStatementBuilder {
 
