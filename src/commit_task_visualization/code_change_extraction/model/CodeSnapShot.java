@@ -1,15 +1,12 @@
 package commit_task_visualization.code_change_extraction.model;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-public class CodeSnapShot {
+public class CodeSnapShot{
 
 	RevCommit commit;
 	RevCommit prevCommit;
@@ -34,7 +31,6 @@ public class CodeSnapShot {
 	public RevCommit getCommit() {
 		return commit;
 	}
-
 
 	public HashMap<DiffEntry, String> getDiffContents() {
 		return diffContents;

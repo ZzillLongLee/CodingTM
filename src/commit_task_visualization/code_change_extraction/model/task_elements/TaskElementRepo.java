@@ -11,18 +11,13 @@ import commit_task_visualization.code_change_extraction.state_enum.InsideClassCh
 
 public class TaskElementRepo {
 
-	private static TaskElementRepo ISTNACE = null;
-	private static HashMap<String, TaskElement> taskElementHashMap;
+	private HashMap<String, TaskElement> taskElementHashMap;
 
-	public static TaskElementRepo getInstance() {
-		if (ISTNACE == null) {
-			ISTNACE = new TaskElementRepo();
-			taskElementHashMap = new HashMap<String, TaskElement>();
-		}
-		return ISTNACE;
+	public TaskElementRepo() {
+		taskElementHashMap = new HashMap<String, TaskElement>();
 	}
-
-	public static HashMap<String, TaskElement> getTaskElementHashMap() {
+	
+	public HashMap<String, TaskElement> getTaskElementHashMap() {
 		return taskElementHashMap;
 	}
 
@@ -38,12 +33,6 @@ public class TaskElementRepo {
 	}
 
 	private void merge(TaskElement taskElement, TaskElement value) {
-//		HashMap<String, TaskElement> targetCausedBy = taskElement.getCausedBy();
-//		HashMap<String, TaskElement> valueCausedBy = value.getCausedBy();
-//		targetCausedBy.putAll(valueCausedBy);
-//		HashMap<String, TaskElement> targetCausedTo = taskElement.getCausedTo();
-//		HashMap<String, TaskElement> valueCausedTo = value.getCausedTo();
-//		targetCausedTo.putAll(valueCausedTo);
 
 		List<TaskElement> targetCausedByList = taskElement.getCausedBy();
 		List<TaskElement> valueCausedByList = value.getCausedBy();
@@ -62,14 +51,16 @@ public class TaskElementRepo {
 	public List<TaskElement> getElements(List<TaskElement> causalRelationship) {
 		List<TaskElement> casualRe = new ArrayList<TaskElement>();
 		for (TaskElement taskElement : causalRelationship) {
-			TaskElement te = getTaskElement(taskElement.taskElementID);
-			if (te == null && taskElement.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
-				te = getMergedElement(taskElement);
-				if (!casualRe.contains(te))
-					casualRe.add(te);
-			} else {
-				if (!casualRe.contains(te))
-					casualRe.add(te);
+			if (taskElement != null) {
+				TaskElement te = getTaskElement(taskElement.taskElementID);
+				if (te == null && taskElement.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
+					te = getMergedElement(taskElement);
+					if (!casualRe.contains(te))
+						casualRe.add(te);
+				} else {
+					if (!casualRe.contains(te))
+						casualRe.add(te);
+				}
 			}
 		}
 		return casualRe;

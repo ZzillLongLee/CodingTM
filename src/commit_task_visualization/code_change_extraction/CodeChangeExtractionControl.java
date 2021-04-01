@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Frame;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import commit_task_visualization.MultiTaskVisulizer;
 import commit_task_visualization.code_change_extraction.ast.ASTSupportSingleton;
 import commit_task_visualization.code_change_extraction.development_flow.DevelopmentFlowGenerator;
 import commit_task_visualization.code_change_extraction.development_flow.DuplicatedFlowFilter;
@@ -47,6 +49,7 @@ import commit_task_visualization.code_change_extraction.util.CodeChunkPreprocess
 import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.code_change_extraction.util.TaskElementGenerater;
 import commit_task_visualization.task_visualization.TaskVisualizer;
+import commit_task_visualization.task_visualization.model.CommitData;
 
 public class CodeChangeExtractionControl {
 
@@ -83,19 +86,21 @@ public class CodeChangeExtractionControl {
 		return codecodeSnapShotList;
 	}
 
-	public void visualizeTask(CodeSnapShot codeSnapShot, Composite parent) {
+	private CommitData generateTask(CodeSnapShot codeSnapShot) {
 		try {
 			cfx.addChangedFiles(codeSnapShot, astSupport);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	
 		identifyChangeType(codeSnapShot);
-
+	
 		DuplicatedFlowFilter dff = new DuplicatedFlowFilter();
 		idSet = new HashMap<String, List<String>>();
-
+	
+		TaskElementRepo taskElementRepo = new TaskElementRepo();
+		
 		System.out.println("Current Version Code Chunk Generating.....");
 		SubCodeChunk curVersionSubCodeChunk = CodeChunkPreprocessor.collectingElementSet(codeSnapShot,
 				Constants.CUR_VERSION);
@@ -104,12 +109,12 @@ public class CodeChangeExtractionControl {
 		curVersionSubCodeChunk = dff.filterDuplicatedFlow(curVersionSubCodeChunk);
 		CodeChunkPreprocessor.reAssignCodeElement(curVersionSubCodeChunk, idSet);
 		curVersionSubCodeChunk.assignConnectedElementsToClassPart();
-
+	
 		List<TaskClass> curTaskClasses = generateTaskClasses(curVersionSubCodeChunk, added);
 		Task curTask = new Task(codeSnapShot.getCommit().getId().toString(), curTaskClasses);
-		TaskElementUtil.insertTEtoRepo(curTaskClasses);
+		TaskElementUtil.insertTEtoRepo(curTaskClasses, taskElementRepo);
 		String curCommitID = curTask.getCommitID();
-
+	
 		System.out.println("Previous Version Code Chunk Generating.....");
 		idSet.clear();
 		SubCodeChunk prevVersionSubCodeChunk = CodeChunkPreprocessor.collectingElementSet(codeSnapShot,
@@ -119,13 +124,13 @@ public class CodeChangeExtractionControl {
 		prevVersionSubCodeChunk = dff.filterDuplicatedFlow(prevVersionSubCodeChunk);
 		CodeChunkPreprocessor.reAssignCodeElement(prevVersionSubCodeChunk, idSet);
 		prevVersionSubCodeChunk.assignConnectedElementsToClassPart();
-
+	
 		List<TaskClass> prevTaskClasses = generateTaskClasses(prevVersionSubCodeChunk, deleted);
 		Task prevTask = new Task(codeSnapShot.getPrevCommit().getId().toString(), prevTaskClasses);
-		TaskElementUtil.insertTEtoRepo(prevTaskClasses);
+		TaskElementUtil.insertTEtoRepo(prevTaskClasses, taskElementRepo);
 		String prevCommitID = prevTask.getCommitID();
-
-		HashMap<String, TaskElement> taskElementHashmap = TaskElementRepo.getInstance().getTaskElementHashMap();
+	
+		HashMap<String, TaskElement> taskElementHashmap = taskElementRepo.getTaskElementHashMap();
 		MergeProcessor mp = new MergeProcessor(prevCommitID, curCommitID);
 		try {
 			mp.mergeTwoVersion(taskElementHashmap);
@@ -133,12 +138,29 @@ public class CodeChangeExtractionControl {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mp.updateCausalRel(taskElementHashmap);
-		TaskTreeGenerator ttg = new TaskTreeGenerator();
+		mp.updateCausalRel(taskElementHashmap, taskElementRepo);
+		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
 		List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
+		return new CommitData(taskList, taskElementHashmap);
+	}
 
+	public void visualizeTask(CodeSnapShot codeSnapShot, Composite parent) {
+		String curCommitID = codeSnapShot.getCommit().getId().toString();
+		String prevCommitID = codeSnapShot.getPrevCommit().getId().toString();
+		CommitData cd = generateTask(codeSnapShot);
+		List<List<TaskElement>> taskList = cd.getTaskList();
+		HashMap<String, TaskElement> taskElementHashmap = cd.getTaskElementHashmap();
 		visualize(parent, curCommitID, prevCommitID, taskElementHashmap, taskList);
+	}
 
+	public void visulizeMultipleTask(List<CodeSnapShot> codeSnapShots) {
+		List<CommitData> commitDataList = new ArrayList<CommitData>();
+		for (CodeSnapShot codeSnapShot : codeSnapShots) {
+			CommitData cd = generateTask(codeSnapShot);
+			commitDataList.add(cd);
+		}
+		MultiTaskVisulizer mtv = new MultiTaskVisulizer(commitDataList);
+		mtv.visulize();
 	}
 
 	private void identifyChangeType(CodeSnapShot codeSnapShot) {
@@ -169,7 +191,7 @@ public class CodeChangeExtractionControl {
 			}
 		});
 	}
-
+	
 	private static List<TaskClass> generateTaskClasses(SubCodeChunk SubCodeChunk, int status) {
 		TaskElementGenerater cceg = new TaskElementGenerater();
 		List<ClassPart> classSet = SubCodeChunk.getClassPartSet();

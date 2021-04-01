@@ -29,6 +29,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
 import commit_task_visualization.task_visualization.VisualizationConstants;
 import prefuse.visual.VisualItem;
@@ -127,16 +128,17 @@ public class TaskElementDialog {
 		tablePanel.add(scrollPane);
 	}
 
-	public void drawDialog(VisualItem item) throws Exception {
-		ItemUtil.setItem(item);
-		String CommitID = ItemUtil.getElementID();
+	public void drawDialog(TaskElement te, int x, int y){
+		TaskElementUtil teUtil = new TaskElementUtil();
+		teUtil.setTaskElement(te);
+		String CommitID = teUtil.getElementID();
+		String pastCode = teUtil.getPastCode();
+		String currentCode = teUtil.getCurrentCode();
+		List<TaskStatement> stmts = teUtil.getStatements();
 		commitIDtextField.setText(CommitID);
 
-		String pastCode = ItemUtil.getPastCode();
 		pastCodeView.setText(pastCode);
-		String currentCode = ItemUtil.getCurrentCode();
 		curCodeView.setText(currentCode);
-		List<TaskStatement> stmts = ItemUtil.getStatements();
 		if (stmts.size() != 0) {
 			jtable.removeAll();
 			StatementTableModel tableModel = new StatementTableModel(stmts);
@@ -185,7 +187,7 @@ public class TaskElementDialog {
 		} else {
 			teDialog.remove(tablePanel);
 		}
-		teDialog.setLocation((int) item.getX(), (int) item.getY());
+		teDialog.setLocation((int) x, (int) y);
 		teDialog.setVisible(true);
 		teDialog.revalidate();
 		teDialog.pack();

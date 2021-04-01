@@ -16,6 +16,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
@@ -117,12 +118,18 @@ public class TaskVisualizer extends JPanel {
 		layout.add(new RepaintAction());
 		m_vis.putAction("layout", layout);
 
+		Box defaultTreeTableBox = new Box(BoxLayout.X_AXIS);
+		defaultTreeTableBox.add(new JScrollPane());
+		defaultTreeTableBox.add(new JScrollPane());
+		defaultTreeTableBox.setVisible(true);
+		add(defaultTreeTableBox, BorderLayout.SOUTH);
+		
 		// set up the display
         m_display = new Display(m_vis);
-        m_display.setPreferredSize(new Dimension(1000, 1000));
+        m_display.setPreferredSize(new Dimension(750, 800));
         m_display.pan(500, 500);
         m_display.setHighQuality(true);
-        m_display.addControlListener(new TaskVisualizerDragControl());
+        m_display.addControlListener(new TaskVisualizerDragControl(this, defaultTreeTableBox));
         m_display.addControlListener(new ZoomControl());
         m_display.addControlListener(new PanControl());
 

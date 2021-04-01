@@ -1,17 +1,12 @@
 package commit_task_visualization.code_change_extraction.git;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.internal.storage.reftree.Command;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;

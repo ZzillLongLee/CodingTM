@@ -1,15 +1,20 @@
 package commit_task_visualization.task_visualization;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
+import javax.swing.Box;
 import javax.swing.SwingUtilities;
 
+import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.task_visualization.dialog.TaskElementDialog;
+import commit_task_visualization.task_visualization.tree_table.TreeTableView;
 import prefuse.Display;
 import prefuse.controls.ControlAdapter;
 import prefuse.data.Node;
@@ -31,16 +36,25 @@ class TaskVisualizerDragControl extends ControlAdapter {
 	protected boolean dragged;
 	private TaskElementDialog teDialog;
 	private final Font defaultFont = FontLib.getFont("SansSerif", 10);
+	private TaskVisualizer taskVisualizer;
+	private TreeTableView ttv;
+	private Box treeTableBox;
+	private Box defaultTreeTableBox;
 
 	/**
 	 * Creates a new drag control that issues repaint requests as an item is
 	 * dragged.
+	 * @param defaultTreeTableBox 
+	 * @param taskVisualizer 
 	 * 
 	 * @param prevCommitID
 	 * @param curCommitID
 	 */
-	public TaskVisualizerDragControl() {
+	public TaskVisualizerDragControl(TaskVisualizer taskVisualizer, Box defaultTreeTableBox) {
+		this.defaultTreeTableBox = defaultTreeTableBox;
+		ttv = new TreeTableView();
 		teDialog = new TaskElementDialog();
+		this.taskVisualizer = taskVisualizer;
 	}
 
 	/**
@@ -84,6 +98,9 @@ class TaskVisualizerDragControl extends ControlAdapter {
 	 *      java.awt.event.MouseEvent)
 	 */
 	public void itemPressed(VisualItem item, MouseEvent e) {
+//		Point pos = e.getPoint();
+//		int x = pos.x;
+//		int y = pos.y;
 		if (!SwingUtilities.isLeftMouseButton(e))
 			return;
 		dragged = false;
@@ -91,14 +108,13 @@ class TaskVisualizerDragControl extends ControlAdapter {
 		d.getAbsoluteCoordinate(e.getPoint(), down);
 		if (item instanceof AggregateItem)
 			setFixed(item, true);
-		if (item instanceof Node && e.getClickCount() == VisualizationConstants.DOUBLE_CLICK) {
-			try {
-				teDialog.drawDialog(item);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
+//		if (item instanceof Node && e.getClickCount() == VisualizationConstants.DOUBLE_CLICK) {
+//			Object obj = item.get(VisualizationConstants.TASKELEMENT);
+//			if (obj instanceof TaskElement) {
+//				TaskElement te = (TaskElement) obj;
+//				teDialog.drawDialog(te, x, y);
+//			}
+//		}
 		if (item instanceof Node && e.getClickCount() == VisualizationConstants.CLICK) {
 			Node node = (Node) item;
 			Iterator edges = node.edges();
@@ -109,8 +125,12 @@ class TaskVisualizerDragControl extends ControlAdapter {
 				targetItem.setTextColor(ColorLib.color(Color.red));
 				edgeItem.setSize(6);
 			}
+			// show treeTable for causally linked task elements.
+			defaultTreeTableBox.removeAll();
+			defaultTreeTableBox.setVisible(false);
+			treeTableBox = ttv.buildTreeTableView(treeTableBox, node);
+			taskVisualizer.add(treeTableBox, BorderLayout.SOUTH);
 		}
-
 	}
 
 	/**

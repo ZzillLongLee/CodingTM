@@ -31,8 +31,7 @@ public class TaskElementUtil {
 		return elementID;
 	}
 
-	public static void insertTEtoRepo(List<TaskClass> curTaskClasses) {
-		TaskElementRepo taskElementRepo = TaskElementRepo.getInstance();
+	public static void insertTEtoRepo(List<TaskClass> curTaskClasses, TaskElementRepo taskElementRepo) {
 		for (TaskClass taskClass : curTaskClasses) {
 			List<TaskAttribute> tas = taskClass.getTaskAttributes();
 			for (TaskAttribute taskAttribute : tas) {

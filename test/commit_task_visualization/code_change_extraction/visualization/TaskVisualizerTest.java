@@ -22,19 +22,19 @@ import commit_task_visualization.task_visualization.TaskVisualizer;
 public class TaskVisualizerTest {
 	
 	public static void main(String[] args) throws CloneNotSupportedException {
-		
+		TaskElementRepo taskElementRepo = new TaskElementRepo();
 		// This code snippet is a part of MergeTest.java		
 		Task curTask = getTaskClasses("Outcome\\1taskClasses.dat");
 		String curCommitID = curTask.getCommitID();
-		TaskElementUtil.insertTEtoRepo(curTask.getClasses());
+		TaskElementUtil.insertTEtoRepo(curTask.getClasses(), taskElementRepo);
 		Task prevTask = getTaskClasses("Outcome\\2taskClasses.dat");
 		String prevCommitID = prevTask.getCommitID();
-		TaskElementUtil.insertTEtoRepo(prevTask.getClasses());
-		HashMap<String, TaskElement> taskElementHashmap = TaskElementRepo.getInstance().getTaskElementHashMap();
+		TaskElementUtil.insertTEtoRepo(prevTask.getClasses(), taskElementRepo);
+		HashMap<String, TaskElement> taskElementHashmap = taskElementRepo.getTaskElementHashMap();
 		MergeProcessor mp = new MergeProcessor(prevCommitID, curCommitID);
 		mp.mergeTwoVersion(taskElementHashmap);
-		mp.updateCausalRel(taskElementHashmap);
-		TaskTreeGenerator ttg = new TaskTreeGenerator();
+		mp.updateCausalRel(taskElementHashmap, taskElementRepo);
+		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
 		 List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
 		
 		TaskVisualizer tv = new TaskVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);

@@ -17,17 +17,18 @@ import commit_task_visualization.code_change_extraction.model.task_elements.Task
 public class MergeTest {
 
 	public static void main(String[] args) throws CloneNotSupportedException {
+		TaskElementRepo taskElementRepo = new TaskElementRepo();
 		Task curTask = getTaskClasses("Outcome\\1taskClasses.dat");
 		String curCommitID = curTask.getCommitID();
-		TaskElementUtil.insertTEtoRepo(curTask.getClasses());
+		TaskElementUtil.insertTEtoRepo(curTask.getClasses(), taskElementRepo);
 		Task prevTask = getTaskClasses("Outcome\\2taskClasses.dat");
 		String prevCommitID = prevTask.getCommitID();
-		TaskElementUtil.insertTEtoRepo(prevTask.getClasses());
-		HashMap<String, TaskElement> taskElementHashmap = TaskElementRepo.getInstance().getTaskElementHashMap();
+		TaskElementUtil.insertTEtoRepo(prevTask.getClasses(), taskElementRepo);
+		HashMap<String, TaskElement> taskElementHashmap = taskElementRepo.getTaskElementHashMap();
 		MergeProcessor mp = new MergeProcessor(prevCommitID, curCommitID);
 		mp.mergeTwoVersion(taskElementHashmap);
-		mp.updateCausalRel(taskElementHashmap);
-		TaskTreeGenerator ttg = new TaskTreeGenerator();
+		mp.updateCausalRel(taskElementHashmap, taskElementRepo);
+		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
 		ttg.buildTaskTree(curTask, prevTask);
 		System.out.println("Each of Task Element's causaul relationship is updated!");
 	}

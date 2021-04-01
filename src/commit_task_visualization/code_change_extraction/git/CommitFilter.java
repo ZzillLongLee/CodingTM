@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -59,7 +60,18 @@ public class CommitFilter {
 			// This previous commit is the after version of commit.
 			targetCommit = commit;
 		}
+		misDiffMerge(codeChunkList);
 		return codeChunkList;
+	}
+
+	private void misDiffMerge(List<CodeSnapShot> codeChunkList) {
+		for (CodeSnapShot codeSnapShot : codeChunkList) {
+			HashMap<DiffEntry, String> diffs = codeSnapShot.getDiffContents();
+			HashMap<DiffEntry, String> copyDiffs = new HashMap<DiffEntry, String>(diffs);
+			for ( Entry<DiffEntry, String> diff : diffs.entrySet()) {
+				String value = diff.getValue();
+			}
+		}
 	}
 
 	private boolean hasTest(List<DiffEntry> diffs) {

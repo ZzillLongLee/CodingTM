@@ -19,19 +19,22 @@ public class CommitFilterTest {
 
 	@Test
 	public void filterCommitTest() throws NoHeadException, GitAPIException, IOException {
-		GitRepositoryGenerator gitRepositoryGen = new GitRepositoryGenerator("URL", "Local_Dir");
+		GitRepositoryGenerator gitRepositoryGen = new GitRepositoryGenerator("https://github.com/stkim123/kr.ac.jbnu.ssel.misrac.git", "D:\\test\\kr.ac.jbnu.ssel.misrac.git");
 		CommitExtractor commitChangesExtractor = new CommitExtractor(gitRepositoryGen);
 		Iterable<RevCommit> commits = commitChangesExtractor.extractCommits();
 		CommitFilter commitFilter = new CommitFilter(gitRepositoryGen);
-		List<CodeSnapShot> codeChunkList = commitFilter.filterCommits(commits, null);
+		List<CodeSnapShot> codeChunkList = commitFilter.filterCommits(commits, "c7167f");
 		for (CodeSnapShot codeChunk : codeChunkList) {
 			System.out.println(codeChunk.getCommitMsg());
+			System.out.println("Current Commit: "+ codeChunk.getCommit().getId().toString());
+			System.out.println("Previous Commit: "+ codeChunk.getPrevCommit().toString());
 			HashMap<DiffEntry, String> diffContents = codeChunk.getDiffContents();
 			Set<Entry<DiffEntry, String>> diffEntryContents = diffContents.entrySet();
+			System.out.println("Diff Size is: " + diffContents.size());
 			for (Entry<DiffEntry, String> diffEntryContent : diffEntryContents) {
 				System.out.println(diffEntryContent.getKey().getOldPath());
 				System.out.println(diffEntryContent.getKey().getNewPath());
-				System.out.println(diffEntryContent.getValue());
+//				System.out.println(diffEntryContent.getValue());
 				System.out.println("-------------------------");
 			}
 		}

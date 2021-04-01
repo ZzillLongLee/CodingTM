@@ -6,14 +6,16 @@ import java.util.*;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -27,6 +29,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.part.ViewPart;
@@ -46,7 +49,7 @@ public class View extends ViewPart {
 
 	IWorkbench workbench;
 
-	private TableViewer commitTableViewer;
+	private CheckboxTableViewer commitTableViewer;
 
 	private Text searchText;
 
@@ -59,26 +62,46 @@ public class View extends ViewPart {
 	private List<CodeSnapShot> commitList;
 
 	private boolean isClicked = false;
+	
+	private List<CodeSnapShot> checkedItem = new ArrayList<CodeSnapShot>();
 
 	@Override
 	public void createPartControl(Composite parent) {
 
 		parent.setLayout(new GridLayout(1, false));
+		parent.setSize(700, 265);
 
 		createCommitSearch(parent);
 
-		commitTableViewer = new TableViewer(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL);
-		Table table = commitTableViewer.getTable();
+		Table table = new Table(parent, SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL);
 		Display device = Display.getCurrent();
 		table.setHeaderBackground(new Color(device, 220, 220, 220));
 		table.setBounds(10, 10, 350, 150);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.setLayoutData(new GridData(600, 250));
+		table.setLayoutData(new GridData(680, 250));
+
+		commitTableViewer = new CheckboxTableViewer(table);
 
 		new CommitMsgColumn().addColumnTo(commitTableViewer);
 		new CommitIDColumn().addColumnTo(commitTableViewer);
 		new CommitTimeColumn().addColumnTo(commitTableViewer);
+
+		table.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.CHECK) {
+					TableItem ti = (TableItem) event.item;
+					if (table.indexOf((TableItem) event.item) == table.getSelectionIndex()) {
+						ti.setChecked(!ti.getChecked());
+					}
+					if(ti.getChecked() == true) {
+						CodeSnapShot codeSnapShot = (CodeSnapShot)ti.getData();
+						checkedItem.add(codeSnapShot);
+					}
+				}
+			}
+		});
 
 		commitTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 		getSite().setSelectionProvider(commitTableViewer);
@@ -93,8 +116,30 @@ public class View extends ViewPart {
 				Object obj = selection.getFirstElement();
 				if (obj instanceof CodeSnapShot) {
 					CodeSnapShot codeSnapShot = (CodeSnapShot) obj;
-					ccec.visualizeTask(codeSnapShot, parent);
+					HashMap<DiffEntry, String> diffs = codeSnapShot.getDiffContents();
+					if (diffs.size() > 0)
+						ccec.visualizeTask(codeSnapShot, parent);
+					else {
+						MessageBox msgDialog = new MessageBox(parent.getShell(),
+								SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
+						msgDialog.setMessage("The changed java file doesn't exist.");
+						msgDialog.open();
+					}
 				}
+			}
+		});
+		Label explainLabel = new Label(parent,  SWT.WRAP);
+		explainLabel.setText("**If you want to see the mutiple commit view, you must check over 2 commit on the list.");
+		explainLabel.setForeground(new Color(new RGB(255,0,0)));
+		
+		Button mutipleCommitViewButton = new Button(parent, SWT.PUSH | SWT.TOGGLE);
+		mutipleCommitViewButton.setText("Show Multiple Commit View");
+		mutipleCommitViewButton.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				ccec.visulizeMultipleTask(checkedItem);
+				checkedItem.clear();
+				commitTableViewer.setAllChecked(false);
 			}
 		});
 	}
@@ -216,6 +261,8 @@ public class View extends ViewPart {
 
 			@Override
 			public void handleEvent(Event arg0) {
+				if (commitList != null)
+					commitList = null;
 				isClicked = false;
 				if (ccec == null && gitRepositoryGen != null) {
 					ccec = CodeChangeExtractionControl.getInstance();

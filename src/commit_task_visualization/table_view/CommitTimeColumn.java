@@ -3,6 +3,7 @@ package commit_task_visualization.table_view;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.eclipse.jgit.lib.PersonIdent;
 
@@ -16,8 +17,7 @@ public class CommitTimeColumn extends CommitTableColumn {
 			CodeSnapShot codeSnapShot = (CodeSnapShot) element;
 			PersonIdent authorIdent = codeSnapShot.getCommit().getAuthorIdent();
 			Date authorDate = authorIdent.getWhen();
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm");
-			return dateFormat.format(authorDate);  
+			return authorDate.toString();  
 		} else
 			return null;
 	}
@@ -29,7 +29,7 @@ public class CommitTimeColumn extends CommitTableColumn {
 
 	@Override
 	public int getWidth() {
-		return 100;
+		return 180;
 	}
 
 }

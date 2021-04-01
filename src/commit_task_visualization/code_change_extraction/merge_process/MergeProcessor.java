@@ -207,8 +207,7 @@ public class MergeProcessor {
 		targetTE.setCausedTo(mergedCausedTo);
 	}
 
-	public void updateCausalRel(HashMap<String, TaskElement> taskElementHashmap) {
-		TaskElementRepo taskRepo = TaskElementRepo.getInstance();
+	public void updateCausalRel(HashMap<String, TaskElement> taskElementHashmap, TaskElementRepo taskRepo) {
 		for (Entry<String, TaskElement> taskElementHash : taskElementHashmap.entrySet()) {
 			TaskElement te = taskElementHash.getValue();
 			List<TaskElement> causedBy = taskRepo.getElements(te.getCausedBy());
