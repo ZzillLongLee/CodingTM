@@ -16,12 +16,12 @@ public class GitRepositoryGenerator {
 	private Git git;
 	private RevWalk walk;
 
-	public GitRepositoryGenerator(String URL, String localDir) {
-		File file = new File(localDir);
+	public GitRepositoryGenerator(String URL, String localProjectPath) {
+		File file = new File(localProjectPath);
 		if (file.exists())
 			getLocalRepository(file);
 		else
-			initGitRepo(URL, localDir);
+			initGitRepo(URL, localProjectPath);
 	}
 
 	public Repository getRepo() {

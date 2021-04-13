@@ -13,7 +13,7 @@ import commit_task_visualization.code_change_extraction.model.sub_chunk.FieldAcc
 import commit_task_visualization.code_change_extraction.model.sub_chunk.MethodInvocationPart;
 import commit_task_visualization.code_change_extraction.model.sub_chunk.QualifiedNamePart;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
-
+import commit_task_visualization.code_change_extraction.util.Constants;
 
 public class AttributePart implements Serializable {
 
@@ -37,7 +37,8 @@ public class AttributePart implements Serializable {
 			namesAsString.add(name.toString());
 		}
 		this.parentClassName = parentClassName.getFullyQualifiedName();
-		this.uniqueID = packageName + "--" + parentClassName.getFullyQualifiedName() + "--" + node.toString();
+		this.uniqueID = packageName + " "+ parentClassName.getFullyQualifiedName()
+				+ " " + node.toString();
 	}
 
 	public String getFieldContent() {

@@ -62,8 +62,8 @@ public class View extends ViewPart {
 	private List<CodeSnapShot> commitList;
 
 	private boolean isClicked = false;
-	
-	private List<CodeSnapShot> checkedItem = new ArrayList<CodeSnapShot>();
+
+	private List<CodeSnapShot> checkedItems = new ArrayList<CodeSnapShot>();
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -95,9 +95,9 @@ public class View extends ViewPart {
 					if (table.indexOf((TableItem) event.item) == table.getSelectionIndex()) {
 						ti.setChecked(!ti.getChecked());
 					}
-					if(ti.getChecked() == true) {
-						CodeSnapShot codeSnapShot = (CodeSnapShot)ti.getData();
-						checkedItem.add(codeSnapShot);
+					if (ti.getChecked() == true) {
+						CodeSnapShot codeSnapShot = (CodeSnapShot) ti.getData();
+						checkedItems.add(codeSnapShot);
 					}
 				}
 			}
@@ -117,9 +117,9 @@ public class View extends ViewPart {
 				if (obj instanceof CodeSnapShot) {
 					CodeSnapShot codeSnapShot = (CodeSnapShot) obj;
 					HashMap<DiffEntry, String> diffs = codeSnapShot.getDiffContents();
-					if (diffs.size() > 0)
+					if (diffs.size() > 0) {
 						ccec.visualizeTask(codeSnapShot, parent);
-					else {
+					} else {
 						MessageBox msgDialog = new MessageBox(parent.getShell(),
 								SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
 						msgDialog.setMessage("The changed java file doesn't exist.");
@@ -128,17 +128,17 @@ public class View extends ViewPart {
 				}
 			}
 		});
-		Label explainLabel = new Label(parent,  SWT.WRAP);
+		Label explainLabel = new Label(parent, SWT.WRAP);
 		explainLabel.setText("**If you want to see the mutiple commit view, you must check over 2 commit on the list.");
-		explainLabel.setForeground(new Color(new RGB(255,0,0)));
-		
+		explainLabel.setForeground(new Color(new RGB(255, 0, 0)));
+
 		Button mutipleCommitViewButton = new Button(parent, SWT.PUSH | SWT.TOGGLE);
 		mutipleCommitViewButton.setText("Show Multiple Commit View");
 		mutipleCommitViewButton.addListener(SWT.Selection, new Listener() {
 			@Override
-			public void handleEvent(Event arg0) {
-				ccec.visulizeMultipleTask(checkedItem);
-				checkedItem.clear();
+			public void handleEvent(Event event) {
+				ccec.visulizeMultipleTask(parent, checkedItems);
+				checkedItems.clear();
 				commitTableViewer.setAllChecked(false);
 			}
 		});
@@ -218,7 +218,8 @@ public class View extends ViewPart {
 					String[] splitedURL = url.split("/");
 					String projectName = splitedURL[splitedURL.length - 1];
 					if (gitRepositoryGen == null) {
-						gitRepositoryGen = new GitRepositoryGenerator(url, localPath + "\\" + projectName);
+						String localProjectPath = localPath + "\\" + projectName;
+						gitRepositoryGen = new GitRepositoryGenerator(url, localProjectPath);
 						MessageBox dialog = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
 						dialog.setMessage("Git clone is done");
 						dialog.open();

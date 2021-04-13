@@ -65,7 +65,7 @@ public class MethodPart implements Serializable {
 			this.parametersAsString = "";
 
 		this.methodSignature = getMethodSignature(node);
-		this.uniqueID = packageName + "--" + className.getFullyQualifiedName() + "--" + methodSignature;
+		this.uniqueID = packageName + " " + className.getFullyQualifiedName() + " " + methodSignature;
 	}
 
 	private String getMethodSignature(MethodDeclaration node) {

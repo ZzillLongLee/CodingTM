@@ -6,12 +6,12 @@ import java.util.List;
 
 import commit_task_visualization.task_visualization.model.CommitData;
 
-public class MultiTaskVisulizer {
+public class MultiTaskFileWriter {
 
 	private List<CommitData> commitDataList;
-	private static final String filepath="D:\\git\\CommitTaskVisualization\\Outcome\\obj.ser";
+	private static final String filepath="D:\\javaWorkspace\\2021-03 workspace\\CommitTaskVisualization\\Outcome\\obj.ser";
 
-	public MultiTaskVisulizer(List<CommitData> commitDataList) {
+	public MultiTaskFileWriter(List<CommitData> commitDataList) {
 		this.commitDataList = commitDataList;
 	}
 

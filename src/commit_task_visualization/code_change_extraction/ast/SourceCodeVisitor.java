@@ -15,14 +15,13 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import commit_task_visualization.code_change_extraction.model.AttributePart;
 import commit_task_visualization.code_change_extraction.model.ClassPart;
 import commit_task_visualization.code_change_extraction.model.MethodPart;
+import commit_task_visualization.code_change_extraction.util.Constants;
 
 
 public class SourceCodeVisitor extends ASTVisitor {
 
 	private List<MethodPart> methodObjects;
 	private List<AttributePart> fieldObjects;
-	private HashMap<String, Type> fields = new HashMap<String, Type>();
-	private String filePath;
 	private List<ClassPart> classParts;
 	private String packageName;
 	private String commitID;
@@ -33,11 +32,10 @@ public class SourceCodeVisitor extends ASTVisitor {
 		this.classParts = prevClsParts;
 		this.methodObjects = methodObjects;
 		this.fieldObjects = fieldObjects;
-		this.filePath = filePath;
 	}
 
 	public boolean visit(PackageDeclaration node) {
-		packageName = commitID.trim()+ " " + node.getName().getFullyQualifiedName();
+		packageName = commitID.trim()+ Constants.SEPERATOR + node.getName().getFullyQualifiedName();
 		return true;
 	}
 

@@ -3,7 +3,7 @@ package commit_task_visualization.code_change_extraction.util;
 public class Constants {
 	public final static String TEST_JAVA = "Test.java";
 	public final static String REQUIREMENT_NUMBER = "IOTDB-932 Removed (wrong and redundant) Verification of Paths";
-	
+	public final static String SEPERATOR = "@@#";
 	public final static String CLASS_KEY_WORD = "class";
 	public final static String KEY_WORD_ABSTRACT = "abstract";
 	public final static String KEY_WORD_SEMICOLON = ";";

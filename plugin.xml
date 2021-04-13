@@ -26,7 +26,7 @@
             name="View"
             id="CommitTaskVisualization.view"
             inject="true">
-      </view>    
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

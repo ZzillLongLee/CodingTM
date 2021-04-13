@@ -1,31 +1,23 @@
 package commit_task_visualization.code_change_extraction;
 
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Frame;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import commit_task_visualization.MultiTaskVisulizer;
 import commit_task_visualization.code_change_extraction.ast.ASTSupportSingleton;
 import commit_task_visualization.code_change_extraction.development_flow.DevelopmentFlowGenerator;
 import commit_task_visualization.code_change_extraction.development_flow.DuplicatedFlowFilter;
@@ -50,6 +42,7 @@ import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.code_change_extraction.util.TaskElementGenerater;
 import commit_task_visualization.task_visualization.TaskVisualizer;
 import commit_task_visualization.task_visualization.model.CommitData;
+import commit_task_visualization.task_visualization.nat_table.MultiCommitViewDialog;
 
 public class CodeChangeExtractionControl {
 
@@ -93,14 +86,14 @@ public class CodeChangeExtractionControl {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 		identifyChangeType(codeSnapShot);
-	
+
 		DuplicatedFlowFilter dff = new DuplicatedFlowFilter();
 		idSet = new HashMap<String, List<String>>();
-	
+
 		TaskElementRepo taskElementRepo = new TaskElementRepo();
-		
+
 		System.out.println("Current Version Code Chunk Generating.....");
 		SubCodeChunk curVersionSubCodeChunk = CodeChunkPreprocessor.collectingElementSet(codeSnapShot,
 				Constants.CUR_VERSION);
@@ -109,12 +102,12 @@ public class CodeChangeExtractionControl {
 		curVersionSubCodeChunk = dff.filterDuplicatedFlow(curVersionSubCodeChunk);
 		CodeChunkPreprocessor.reAssignCodeElement(curVersionSubCodeChunk, idSet);
 		curVersionSubCodeChunk.assignConnectedElementsToClassPart();
-	
+
 		List<TaskClass> curTaskClasses = generateTaskClasses(curVersionSubCodeChunk, added);
 		Task curTask = new Task(codeSnapShot.getCommit().getId().toString(), curTaskClasses);
 		TaskElementUtil.insertTEtoRepo(curTaskClasses, taskElementRepo);
 		String curCommitID = curTask.getCommitID();
-	
+
 		System.out.println("Previous Version Code Chunk Generating.....");
 		idSet.clear();
 		SubCodeChunk prevVersionSubCodeChunk = CodeChunkPreprocessor.collectingElementSet(codeSnapShot,
@@ -124,12 +117,12 @@ public class CodeChangeExtractionControl {
 		prevVersionSubCodeChunk = dff.filterDuplicatedFlow(prevVersionSubCodeChunk);
 		CodeChunkPreprocessor.reAssignCodeElement(prevVersionSubCodeChunk, idSet);
 		prevVersionSubCodeChunk.assignConnectedElementsToClassPart();
-	
+
 		List<TaskClass> prevTaskClasses = generateTaskClasses(prevVersionSubCodeChunk, deleted);
 		Task prevTask = new Task(codeSnapShot.getPrevCommit().getId().toString(), prevTaskClasses);
 		TaskElementUtil.insertTEtoRepo(prevTaskClasses, taskElementRepo);
 		String prevCommitID = prevTask.getCommitID();
-	
+
 		HashMap<String, TaskElement> taskElementHashmap = taskElementRepo.getTaskElementHashMap();
 		MergeProcessor mp = new MergeProcessor(prevCommitID, curCommitID);
 		try {
@@ -141,7 +134,7 @@ public class CodeChangeExtractionControl {
 		mp.updateCausalRel(taskElementHashmap, taskElementRepo);
 		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
 		List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
-		return new CommitData(taskList, taskElementHashmap);
+		return new CommitData(curCommitID, prevCommitID, taskList, taskElementHashmap);
 	}
 
 	public void visualizeTask(CodeSnapShot codeSnapShot, Composite parent) {
@@ -150,17 +143,37 @@ public class CodeChangeExtractionControl {
 		CommitData cd = generateTask(codeSnapShot);
 		List<List<TaskElement>> taskList = cd.getTaskList();
 		HashMap<String, TaskElement> taskElementHashmap = cd.getTaskElementHashmap();
-		visualize(parent, curCommitID, prevCommitID, taskElementHashmap, taskList);
+		visualizeSingleCommit(parent, curCommitID, prevCommitID, taskElementHashmap, taskList);
 	}
 
-	public void visulizeMultipleTask(List<CodeSnapShot> codeSnapShots) {
+	public void visulizeMultipleTask(Composite parent, List<CodeSnapShot> codeSnapShots) {
+		StringBuilder sb = new StringBuilder();
 		List<CommitData> commitDataList = new ArrayList<CommitData>();
+		boolean hasZeroDiff = false;
+		int index = 0;
 		for (CodeSnapShot codeSnapShot : codeSnapShots) {
-			CommitData cd = generateTask(codeSnapShot);
-			commitDataList.add(cd);
+			int diffSize = codeSnapShot.getDiffContents().size();
+			if (diffSize != 0) {
+				CommitData cd = generateTask(codeSnapShot);
+				commitDataList.add(cd);
+			} else {
+				hasZeroDiff = true;
+				if (index != codeSnapShots.size() - 1)
+					sb.append(codeSnapShot.getCommit().getId().toString() + ", ");
+				else
+					sb.append(codeSnapShot.getCommit().getId().toString());
+			}
 		}
-		MultiTaskVisulizer mtv = new MultiTaskVisulizer(commitDataList);
-		mtv.visulize();
+
+		if (hasZeroDiff != true) {
+			MultiCommitViewDialog ntd = new MultiCommitViewDialog(parent.getShell(), commitDataList);
+			ntd.open();
+			
+		} else {
+			MessageBox msgDialog = new MessageBox(parent.getShell(), SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
+			msgDialog.setMessage("These Following Commits: " + sb.toString() + "doesn't have java files.");
+			msgDialog.open();
+		}
 	}
 
 	private void identifyChangeType(CodeSnapShot codeSnapShot) {
@@ -171,8 +184,8 @@ public class CodeChangeExtractionControl {
 		}
 	}
 
-	private void visualize(Composite parent, String curCommitID, String prevCommitID, HashMap<String, TaskElement> taskElementHashmap,
-			List<List<TaskElement>> taskList) {
+	public void visualizeSingleCommit(Composite parent, String curCommitID, String prevCommitID,
+			HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList) {
 		tv = new TaskVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
 		JPanel panel = tv.showTask();
 		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
@@ -191,7 +204,7 @@ public class CodeChangeExtractionControl {
 			}
 		});
 	}
-	
+
 	private static List<TaskClass> generateTaskClasses(SubCodeChunk SubCodeChunk, int status) {
 		TaskElementGenerater cceg = new TaskElementGenerater();
 		List<ClassPart> classSet = SubCodeChunk.getClassPartSet();
