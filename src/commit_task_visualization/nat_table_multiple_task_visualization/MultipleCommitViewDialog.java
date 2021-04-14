@@ -1,4 +1,4 @@
-package commit_task_visualization.nat_table_multi_task_visualization;
+package commit_task_visualization.nat_table_multiple_task_visualization;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,11 +60,11 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import commit_task_visualization.code_change_extraction.CodeChangeExtractionControl;
-import commit_task_visualization.nat_table_multi_task_visualization.model.CommitTableDataGenerator;
-import commit_task_visualization.nat_table_multi_task_visualization.util.NatTableConstants;
+import commit_task_visualization.nat_table_multiple_task_visualization.model.CommitTableDataGenerator;
+import commit_task_visualization.nat_table_multiple_task_visualization.util.NatTableConstants;
 import commit_task_visualization.task_visualization.model.CommitData;
 
-public class MultiCommitViewDialog extends Dialog {
+public class MultipleCommitViewDialog extends Dialog {
 
 	private static final String ADD_LABEL = "ADD";
 	private static final String MODIFIED_LABEL = "MODIFIED";
@@ -82,7 +82,7 @@ public class MultiCommitViewDialog extends Dialog {
 	private List<CommitData> commitDataList;
 	private DataLayer bodyDataLayer;
 
-	public MultiCommitViewDialog(Shell parentShell, List<CommitData> commitDataList) {
+	public MultipleCommitViewDialog(Shell parentShell, List<CommitData> commitDataList) {
 		super(parentShell);
 		this.commitDataList = commitDataList;
 	}

@@ -1,4 +1,4 @@
-package commit_task_visualization.nat_table_multi_task_visualization;
+package commit_task_visualization.nat_table_multiple_task_visualization;
 
 import java.util.LinkedHashMap;
 import java.util.List;

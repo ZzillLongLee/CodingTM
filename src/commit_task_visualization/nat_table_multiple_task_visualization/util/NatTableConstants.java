@@ -1,4 +1,4 @@
-package commit_task_visualization.nat_table_multi_task_visualization.util;
+package commit_task_visualization.nat_table_multiple_task_visualization.util;
 
 public class NatTableConstants {
 
