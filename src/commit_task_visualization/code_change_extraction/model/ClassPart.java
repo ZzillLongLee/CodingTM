@@ -14,7 +14,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 import commit_task_visualization.code_change_extraction.util.Constants;
 
-
 public class ClassPart implements Serializable {
 
 	private boolean isAbstract;
@@ -51,8 +50,8 @@ public class ClassPart implements Serializable {
 			}
 			this.classModifiersAsString = sb.toString().substring(0, sb.toString().length() - 1);
 		}
-		
-		this.uniqueID = packageName+" " + className;
+
+		this.uniqueID = packageName + Constants.SEPERATOR + className;
 	}
 
 	public boolean isAbstract() {
@@ -102,7 +101,7 @@ public class ClassPart implements Serializable {
 						Modifier mod = (Modifier) modifier;
 						String modAsString = mod.toString();
 						this.classIdentifier = classString.substring(classString.indexOf(modAsString),
-								classString.indexOf(Constants.START_BLOCK+"\n"));
+								classString.indexOf(Constants.START_BLOCK + "\n"));
 					}
 //					if (modifier instanceof MarkerAnnotation) {
 //						MarkerAnnotation ma = (MarkerAnnotation) modifier;

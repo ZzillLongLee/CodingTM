@@ -1,4 +1,4 @@
-package commit_task_visualization.table_view;
+package commit_task_visualization.table_view_columns;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

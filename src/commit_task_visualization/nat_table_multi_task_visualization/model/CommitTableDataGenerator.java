@@ -1,4 +1,4 @@
-package commit_task_visualization.task_visualization.nat_table.model;
+package commit_task_visualization.nat_table_multi_task_visualization.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import commit_task_visualization.code_change_extraction.model.task_elements.Task
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskMethod;
 import commit_task_visualization.code_change_extraction.util.Constants;
+import commit_task_visualization.nat_table_multi_task_visualization.util.NatTableConstants;
 import commit_task_visualization.task_visualization.model.CommitData;
-import commit_task_visualization.task_visualization.nat_table.util.NatTableConstants;
 
 public class CommitTableDataGenerator {
 
@@ -44,7 +44,7 @@ public class CommitTableDataGenerator {
 					LinkedHashMap<String, String> valueRow = new LinkedHashMap<>();
 					String className = getClassName(taskElement);
 					String taskID = taskElement.getTaskElementID();
-					String idWithOutCommit = getIdWithoutCommit(taskID);
+					String idWithOutCommit = getTaskElementIdentifier(taskID);
 					boolean isContained = isTaskElementContained(idWithOutCommit, values);
 					if (isContained == false) {
 						valueRow.put(NatTableConstants.CLASS_NAME_COLUMN, className);
@@ -68,7 +68,7 @@ public class CommitTableDataGenerator {
 				for (List<TaskElement> commitTask : commitTaskList) {
 					for (TaskElement taskElement : commitTask) {
 						String taskID = taskElement.getTaskElementID();
-						String idWithOutCommit = getIdWithoutCommit(taskID);
+						String idWithOutCommit = getTaskElementIdentifier(taskID);
 						if (idWithOutCommit.equals(targetID)) {
 							isCommitInclude = true;
 							map.put(NatTableConstants.TASK_COLUMN + commitNum + ")", NatTableConstants.TASK_CELL_VALUE + taskNum);
@@ -102,7 +102,7 @@ public class CommitTableDataGenerator {
 		return false;
 	}
 
-	private String getIdWithoutCommit(String taskID) {
+	private String getTaskElementIdentifier(String taskID) {
 		String[] splitedID = taskID.split(Constants.SEPERATOR);
 		return splitedID[splitedID.length - 1];
 	}

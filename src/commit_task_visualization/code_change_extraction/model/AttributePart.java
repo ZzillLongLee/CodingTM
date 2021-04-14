@@ -37,8 +37,8 @@ public class AttributePart implements Serializable {
 			namesAsString.add(name.toString());
 		}
 		this.parentClassName = parentClassName.getFullyQualifiedName();
-		this.uniqueID = packageName + " "+ parentClassName.getFullyQualifiedName()
-				+ " " + node.toString();
+		this.uniqueID = packageName + Constants.SEPERATOR + parentClassName.getFullyQualifiedName()
+				+ Constants.SEPERATOR + node.toString();
 	}
 
 	public String getFieldContent() {

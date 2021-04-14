@@ -1,4 +1,4 @@
-package commit_task_visualization.task_visualization.nat_table;
+package commit_task_visualization.nat_table_multi_task_visualization;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,9 +60,9 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import commit_task_visualization.code_change_extraction.CodeChangeExtractionControl;
+import commit_task_visualization.nat_table_multi_task_visualization.model.CommitTableDataGenerator;
+import commit_task_visualization.nat_table_multi_task_visualization.util.NatTableConstants;
 import commit_task_visualization.task_visualization.model.CommitData;
-import commit_task_visualization.task_visualization.nat_table.model.CommitTableDataGenerator;
-import commit_task_visualization.task_visualization.nat_table.util.NatTableConstants;
 
 public class MultiCommitViewDialog extends Dialog {
 

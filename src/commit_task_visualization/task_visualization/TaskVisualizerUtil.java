@@ -3,6 +3,7 @@ package commit_task_visualization.task_visualization;
 import java.util.Iterator;
 
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
+import commit_task_visualization.code_change_extraction.util.Constants;
 import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 
@@ -20,10 +21,10 @@ public class TaskVisualizerUtil {
 	}
 
 	public static String getLabel(String taskElementID) {
-		String[] splitedID = taskElementID.split(VisualizationConstants.SPLITMARK);
-		String packagePath = splitedID[2];
-		String className = splitedID[3];
-		String identifier = splitedID[4];
+		String[] splitedID = taskElementID.split(Constants.SEPERATOR);
+		String packagePath = splitedID[1];
+		String className = splitedID[2];
+		String identifier = splitedID[3];
 		return className+VisualizationConstants.SPLITMARK+identifier;
 	}
 	

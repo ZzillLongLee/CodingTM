@@ -40,9 +40,9 @@ import commit_task_visualization.code_change_extraction.model.task_elements.Task
 import commit_task_visualization.code_change_extraction.util.CodeChunkPreprocessor;
 import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.code_change_extraction.util.TaskElementGenerater;
+import commit_task_visualization.nat_table_multi_task_visualization.MultiCommitViewDialog;
 import commit_task_visualization.task_visualization.TaskVisualizer;
 import commit_task_visualization.task_visualization.model.CommitData;
-import commit_task_visualization.task_visualization.nat_table.MultiCommitViewDialog;
 
 public class CodeChangeExtractionControl {
 

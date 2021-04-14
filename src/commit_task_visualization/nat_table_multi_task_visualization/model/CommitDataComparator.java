@@ -1,4 +1,4 @@
-package commit_task_visualization.task_visualization.nat_table.model;
+package commit_task_visualization.nat_table_multi_task_visualization.model;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;

@@ -19,7 +19,6 @@ import org.eclipse.jdt.core.dom.Type;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 import commit_task_visualization.code_change_extraction.util.Constants;
 
-
 public class MethodPart implements Serializable {
 
 	private boolean isUsed = false;
@@ -65,7 +64,8 @@ public class MethodPart implements Serializable {
 			this.parametersAsString = "";
 
 		this.methodSignature = getMethodSignature(node);
-		this.uniqueID = packageName + " " + className.getFullyQualifiedName() + " " + methodSignature;
+		this.uniqueID = packageName + Constants.SEPERATOR + className.getFullyQualifiedName() + Constants.SEPERATOR
+				+ methodSignature;
 	}
 
 	private String getMethodSignature(MethodDeclaration node) {

@@ -37,9 +37,9 @@ import org.eclipse.ui.part.ViewPart;
 import commit_task_visualization.code_change_extraction.CodeChangeExtractionControl;
 import commit_task_visualization.code_change_extraction.git.GitRepositoryGenerator;
 import commit_task_visualization.code_change_extraction.model.CodeSnapShot;
-import commit_task_visualization.table_view.CommitIDColumn;
-import commit_task_visualization.table_view.CommitMsgColumn;
-import commit_task_visualization.table_view.CommitTimeColumn;
+import commit_task_visualization.table_view_columns.CommitIDColumn;
+import commit_task_visualization.table_view_columns.CommitMsgColumn;
+import commit_task_visualization.table_view_columns.CommitTimeColumn;
 
 public class View extends ViewPart {
 	public static final String ID = "CommitTaskVisualization.view";
