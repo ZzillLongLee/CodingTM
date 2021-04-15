@@ -84,6 +84,8 @@ public class TaskElementDialog {
 		pastCodeView = new RSyntaxTextArea();
 		pastCodeView.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		pastCodeView.setCodeFoldingEnabled(true);
+		pastCodeView.setAutoscrolls(true);
+		pastCodeView.setEditable(false);
 		pastCVhighlighter = pastCodeView.getHighlighter();
 		RTextScrollPane pastCodeViewSP = new RTextScrollPane(pastCodeView);
 		pastCodeViewSP.setPreferredSize(new Dimension(450, 300));
@@ -105,6 +107,8 @@ public class TaskElementDialog {
 		curCodeView = new RSyntaxTextArea();
 		curCodeView.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		curCodeView.setCodeFoldingEnabled(true);
+		curCodeView.setAutoscrolls(true);
+		curCodeView.setEditable(false);
 		curCVhighlighter = curCodeView.getHighlighter();
 		codePanelBox.add(curCodeView);
 		RTextScrollPane curCodeViewSP = new RTextScrollPane(curCodeView);

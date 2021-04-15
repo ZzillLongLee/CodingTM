@@ -4,6 +4,7 @@ import java.util.Iterator;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.commons.collections4.map.HashedMap;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
+import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.task_visualization.VisualizationConstants;
 import prefuse.data.Node;
 import prefuse.visual.tuple.TableEdgeItem;
@@ -56,7 +57,7 @@ public class CausalLinkTreeGenerator {
 		TaskElement te = (TaskElement) node.get(VisualizationConstants.TASKELEMENT);
 		String teID = te.getTaskElementID();
 		String changeType = te.getChangedType();
-		String[] splitedID = teID.split("--");
+		String[] splitedID = teID.split(Constants.SEPERATOR);
 		String nodeValue = splitedID[splitedID.length - 1];
 		DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(changeType + ": " + nodeValue);
 		tableNodeMap.put(treeNode, te);

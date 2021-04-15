@@ -63,8 +63,6 @@ public class View extends ViewPart {
 
 	private boolean isClicked = false;
 
-	private List<CodeSnapShot> checkedItems = new ArrayList<CodeSnapShot>();
-
 	@Override
 	public void createPartControl(Composite parent) {
 
@@ -94,10 +92,6 @@ public class View extends ViewPart {
 					TableItem ti = (TableItem) event.item;
 					if (table.indexOf((TableItem) event.item) == table.getSelectionIndex()) {
 						ti.setChecked(!ti.getChecked());
-					}
-					if (ti.getChecked() == true) {
-						CodeSnapShot codeSnapShot = (CodeSnapShot) ti.getData();
-						checkedItems.add(codeSnapShot);
 					}
 				}
 			}
@@ -137,8 +131,8 @@ public class View extends ViewPart {
 		mutipleCommitViewButton.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				ccec.visulizeMultipleTask(parent, checkedItems);
-				checkedItems.clear();
+				Object[] checkedElements = commitTableViewer.getCheckedElements();
+				ccec.visulizeMultipleTask(parent, checkedElements);
 				commitTableViewer.setAllChecked(false);
 			}
 		});

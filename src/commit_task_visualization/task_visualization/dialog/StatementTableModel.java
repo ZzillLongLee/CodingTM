@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
+import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.task_visualization.TaskVisualizer;
 
 
@@ -78,10 +79,11 @@ public class StatementTableModel extends AbstractTableModel {
 					for (int i = 0; i < connectedIDs.size(); i++) {
 						String id = connectedIDs.get(i);
 						id = filterCommitID(id);
+						String[] splitedId = id.split(Constants.SEPERATOR);
 						if (i != connectedIDs.size() - 1)
-							sb.append(id + "\n");
+							sb.append(splitedId[splitedId.length-1] + "\n");
 						else
-							sb.append(id);
+							sb.append(splitedId[splitedId.length-1]);
 					}
 					temp = new String(sb);
 				}

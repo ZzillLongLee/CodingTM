@@ -146,19 +146,20 @@ public class CodeChangeExtractionControl {
 		visualizeSingleCommit(parent, curCommitID, prevCommitID, taskElementHashmap, taskList);
 	}
 
-	public void visulizeMultipleTask(Composite parent, List<CodeSnapShot> codeSnapShots) {
+	public void visulizeMultipleTask(Composite parent, Object[] checkedElements) {
 		StringBuilder sb = new StringBuilder();
 		List<CommitData> commitDataList = new ArrayList<CommitData>();
 		boolean hasZeroDiff = false;
 		int index = 0;
-		for (CodeSnapShot codeSnapShot : codeSnapShots) {
+		for (Object object : checkedElements) {
+			CodeSnapShot codeSnapShot = (CodeSnapShot)object;
 			int diffSize = codeSnapShot.getDiffContents().size();
 			if (diffSize != 0) {
 				CommitData cd = generateTask(codeSnapShot);
 				commitDataList.add(cd);
 			} else {
 				hasZeroDiff = true;
-				if (index != codeSnapShots.size() - 1)
+				if (index != checkedElements.length - 1)
 					sb.append(codeSnapShot.getCommit().getId().toString() + ", ");
 				else
 					sb.append(codeSnapShot.getCommit().getId().toString());
