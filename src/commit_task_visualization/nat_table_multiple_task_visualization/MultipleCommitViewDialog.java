@@ -59,7 +59,7 @@ import org.eclipse.swt.widgets.Shell;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
-import commit_task_visualization.code_change_extraction.CodeChangeExtractionControl;
+import commit_task_visualization.CodeChangeExtractionControl;
 import commit_task_visualization.nat_table_multiple_task_visualization.model.CommitTableDataGenerator;
 import commit_task_visualization.nat_table_multiple_task_visualization.util.NatTableConstants;
 import commit_task_visualization.task_visualization.model.CommitData;
@@ -255,7 +255,6 @@ public class MultipleCommitViewDialog extends Dialog {
 		natTable.setConfigRegistry(configRegistry);
 		natTable.configure();
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		System.out.println(bodyDataLayer.getWidth() + bodyDataLayer.getHeight());
 		return container;
 
 	}

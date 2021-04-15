@@ -164,6 +164,7 @@ public class TaskVisualizer extends JPanel {
 		for (int i = 0; i < taskList.size(); ++i) {
 			AggregateItem aitem = (AggregateItem) at.addItem();
 			aitem.setInt("id", i);
+			aitem.setString("label", "Task_"+i);
 			List<TaskElement> task = taskList.get(i);
 			boolean isTestCase = false;
 			for (TaskElement taskElement : task) {

@@ -29,17 +29,18 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.part.ViewPart;
 
-import commit_task_visualization.code_change_extraction.CodeChangeExtractionControl;
 import commit_task_visualization.code_change_extraction.git.GitRepositoryGenerator;
 import commit_task_visualization.code_change_extraction.model.CodeSnapShot;
 import commit_task_visualization.table_view_columns.CommitIDColumn;
 import commit_task_visualization.table_view_columns.CommitMsgColumn;
 import commit_task_visualization.table_view_columns.CommitTimeColumn;
+import commit_task_visualization.table_view_columns.CommitterColumn;
 
 public class View extends ViewPart {
 	public static final String ID = "CommitTaskVisualization.view";
@@ -71,19 +72,21 @@ public class View extends ViewPart {
 
 		createCommitSearch(parent);
 
-		Table table = new Table(parent, SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL);
+		Table table = new Table(parent,
+				SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.RESIZE | SWT.FULL_SELECTION | SWT.V_SCROLL);
 		Display device = Display.getCurrent();
 		table.setHeaderBackground(new Color(device, 220, 220, 220));
-		table.setBounds(10, 10, 350, 150);
+		table.setBounds(10, 10, 400, 150);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setLayoutData(new GridData(680, 250));
 
 		commitTableViewer = new CheckboxTableViewer(table);
 
+		new CommitTimeColumn().addColumnTo(commitTableViewer);
+		new CommitterColumn().addColumnTo(commitTableViewer);
 		new CommitMsgColumn().addColumnTo(commitTableViewer);
 		new CommitIDColumn().addColumnTo(commitTableViewer);
-		new CommitTimeColumn().addColumnTo(commitTableViewer);
 
 		table.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -136,6 +139,7 @@ public class View extends ViewPart {
 				commitTableViewer.setAllChecked(false);
 			}
 		});
+
 	}
 
 	private void createCommitSearch(Composite parent) {

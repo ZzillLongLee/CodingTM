@@ -21,7 +21,7 @@ public class CommitIDColumn extends CommitTableColumn{
 	@Override
 	public int getWidth() {
 		
-		return 250;
+		return 150;
 	}
 
 }

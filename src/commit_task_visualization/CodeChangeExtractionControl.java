@@ -1,4 +1,4 @@
-package commit_task_visualization.code_change_extraction;
+package commit_task_visualization;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -150,22 +150,20 @@ public class CodeChangeExtractionControl {
 		StringBuilder sb = new StringBuilder();
 		List<CommitData> commitDataList = new ArrayList<CommitData>();
 		boolean hasZeroDiff = false;
-		int index = 0;
-		for (Object object : checkedElements) {
-			CodeSnapShot codeSnapShot = (CodeSnapShot)object;
+		for (int i = checkedElements.length-1; i >= 0; i--) {
+			CodeSnapShot codeSnapShot = (CodeSnapShot)checkedElements[i];
 			int diffSize = codeSnapShot.getDiffContents().size();
 			if (diffSize != 0) {
 				CommitData cd = generateTask(codeSnapShot);
 				commitDataList.add(cd);
 			} else {
 				hasZeroDiff = true;
-				if (index != checkedElements.length - 1)
+				if (i != checkedElements.length - 1)
 					sb.append(codeSnapShot.getCommit().getId().toString() + ", ");
 				else
 					sb.append(codeSnapShot.getCommit().getId().toString());
 			}
 		}
-
 		if (hasZeroDiff != true) {
 			MultipleCommitViewDialog ntd = new MultipleCommitViewDialog(parent.getShell(), commitDataList);
 			ntd.open();
@@ -212,7 +210,6 @@ public class CodeChangeExtractionControl {
 		List<TaskClass> taskCCCset = cceg.convertTaskDataStructure(classSet, status);
 		List<ClassPart> testClassSet = SubCodeChunk.getTestClassPartSet();
 		List<TaskClass> taskCCCTset = cceg.convertTaskDataStructure(testClassSet, status);
-		System.out.println();
 		List<TaskClass> totalCCC = Stream.concat(taskCCCset.stream(), taskCCCTset.stream())
 				.collect(Collectors.toList());
 		return totalCCC;
