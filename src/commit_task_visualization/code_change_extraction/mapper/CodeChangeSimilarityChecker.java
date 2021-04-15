@@ -17,13 +17,15 @@ public class CodeChangeSimilarityChecker {
 			List<AttributePart> prevVersionFieldObjects) {
 		HashMap<AttributePart, AttributePart> matchedAttributeSet = new HashMap<AttributePart, AttributePart>();
 		for (AttributePart prevAttributePart : prevVersionFieldObjects) {
+			String prevClassName = prevAttributePart.getClassName();
 			String prevAttributeAsString = prevAttributePart.getFieldDecl().toString();
 			List<String> prevAttrPartNames = prevAttributePart.getNames();
 			HashMap<Double, AttributePart> similarAttributeSet = new HashMap<Double, AttributePart>();
 			for (AttributePart curAttributePart : curVersionFieldObjects) {
+				String curClassName = curAttributePart.getClassName();
 				String curAttributeAsString = curAttributePart.getFieldDecl().toString();
 				List<String> curAttrPartNames = curAttributePart.getNames();
-				if (!curAttributeAsString.equals(prevAttributeAsString)) {
+				if (curClassName.equals(prevClassName) && !curAttributeAsString.equals(prevAttributeAsString)) {
 					double similarityValue = computeSimilarity(curAttrPartNames, prevAttrPartNames);
 					similarAttributeSet.put(similarityValue, curAttributePart);
 				}

@@ -39,34 +39,6 @@ public class CommitExtractor {
 		return commits;
 	}
 
-	public RevCommit getCommit(String commitID) {
-		RevCommit commit = null;
-		try {
-			RevWalk walk = new RevWalk(repo);
-			ObjectId id = null;
-			id = repo.resolve(commitID);
-			commit = walk.parseCommit(id);
-			System.out.println("Found Commit again: " + commit);
-			walk.dispose();
-		} catch (RevisionSyntaxException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return commit;
-	}
-	// the prevCommit is the right next version of commit in commit list.
-	public RevCommit getPrevCommit(RevCommit curCommit, Iterable<RevCommit> commits) {
-		RevCommit targetCommit = null;
-		RevCommit prevCommit = null;
-		for (RevCommit revCommit : commits) {
-			if (revCommit.equals(curCommit))
-				targetCommit = prevCommit;
-			else
-				prevCommit = revCommit;
-		}
-		return targetCommit;
-	}
-
 	private Ref getMasterBranch(Git git) {
 		List<Ref> branches;
 		Ref masterBrunch = null;

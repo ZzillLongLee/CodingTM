@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
+import commit_task_visualization.code_change_extraction.util.CodeChunkPreprocessor;
 import commit_task_visualization.code_change_extraction.util.Constants;
 
 public class ClassPart implements Serializable {
@@ -20,7 +21,6 @@ public class ClassPart implements Serializable {
 	private boolean isInterface;
 	private String superClassName;
 	private InsideClassChangeType classIdentifierState;
-	private String classModifiersAsString;
 	private String classIdentifier;
 	private String className;
 	private List<ClassPart> connectedClassParts = new ArrayList<ClassPart>();
@@ -30,27 +30,12 @@ public class ClassPart implements Serializable {
 	private String classConnection;
 	private String uniqueID;
 	private List modifiers;
-	private String javaDoc;
 	private String classString;
 
 	public ClassPart(String packageName, TypeDeclaration node) {
-		classString = node.toString();
+		this.classString = node.toString();
+		this.classIdentifier = CodeChunkPreprocessor.extractClassIdentifier(this.classString, node);
 		this.className = node.getName().getFullyQualifiedName();
-		Javadoc javadoc = node.getJavadoc();
-		if (javadoc != null)
-			javaDoc = javadoc.toString();
-		this.modifiers = node.modifiers();
-		StringBuffer sb = new StringBuffer();
-		if (modifiers.size() != 0) {
-			for (Object object : modifiers) {
-				if (object instanceof Modifier) {
-					Modifier modifier = (Modifier) object;
-					sb.append(modifier.toString() + " ");
-				}
-			}
-			this.classModifiersAsString = sb.toString().substring(0, sb.toString().length() - 1);
-		}
-
 		this.uniqueID = packageName + Constants.SEPERATOR + className;
 	}
 
@@ -91,30 +76,6 @@ public class ClassPart implements Serializable {
 	}
 
 	public String getClassIdentifier() {
-		if (classIdentifier == null) {
-			if (modifiers.size() != 0) {
-				if (javaDoc != null) {
-					classString = classString.replace(javaDoc, "");
-				}
-				for (Object modifier : modifiers) {
-					if (modifier instanceof Modifier) {
-						Modifier mod = (Modifier) modifier;
-						String modAsString = mod.toString();
-						this.classIdentifier = classString.substring(classString.indexOf(modAsString),
-								classString.indexOf(Constants.START_BLOCK + "\n"));
-					}
-//					if (modifier instanceof MarkerAnnotation) {
-//						MarkerAnnotation ma = (MarkerAnnotation) modifier;
-//						String maAsString = ma.toString();
-//						this.classIdentifier = classString.substring(classString.indexOf(maAsString),
-//								classString.indexOf(Constants.START_BLOCK));
-//					}
-				}
-			} else {
-				this.classIdentifier = classString.substring(classString.indexOf(Constants.CLASS_KEY_WORD),
-						classString.indexOf(Constants.START_BLOCK));
-			}
-		}
 		return classIdentifier;
 	}
 

@@ -52,12 +52,21 @@ public class ChangeStateIdentifier {
 			setClassIdentifierChangeState(prevVersionClassParts, curVersionClassParts);
 			setClassIdentifierChangeState(curVersionClassParts, prevVersionClassParts);
 
+			List<AttributePart> filteredPrevVersionFieldObjects = filterAttributePart(curVersionFieldObjects,
+					prevVersionFieldObjects);
+			List<AttributePart> filteredCurVersionFieldObjects = filterAttributePart(prevVersionFieldObjects,
+					curVersionFieldObjects);
+			
 			HashMap<AttributePart, AttributePart> similarAttributeSet = ccsc
-					.getAttributeSimilaritySet(curVersionFieldObjects, prevVersionFieldObjects);
-			setAttributesChangeState(curVersionFieldObjects, prevVersionFieldObjects, Constants.PREV_VERSION,
-					similarAttributeSet);
-			setAttributesChangeState(prevVersionFieldObjects, curVersionFieldObjects, Constants.CUR_VERSION,
-					similarAttributeSet);
+					.getAttributeSimilaritySet(filteredCurVersionFieldObjects, filteredPrevVersionFieldObjects);
+			setAttributesChangeState(filteredCurVersionFieldObjects, filteredPrevVersionFieldObjects,
+					Constants.PREV_VERSION, similarAttributeSet);
+
+			similarAttributeSet = ccsc.getAttributeSimilaritySet(filteredPrevVersionFieldObjects,
+					filteredCurVersionFieldObjects);
+			setAttributesChangeState(filteredPrevVersionFieldObjects, filteredCurVersionFieldObjects,
+					Constants.CUR_VERSION, similarAttributeSet);
+			
 			// the statement compare also should be changed in near future.
 			setMethodsChangeState(curVersionMethodObjects, prevVersionMethodObjects, Constants.PREV_VERSION);
 			setMethodsChangeState(prevVersionMethodObjects, curVersionMethodObjects, Constants.CUR_VERSION);
@@ -126,29 +135,18 @@ public class ChangeStateIdentifier {
 	private void setAttributesChangeState(List<AttributePart> fieldObjects1, List<AttributePart> fieldObjects2,
 			int versionType, HashMap<AttributePart, AttributePart> similarAttributeSet) {
 		for (AttributePart attributePart2 : fieldObjects2) {
-			String attributeAsString1 = attributePart2.getFieldDecl().toString();
-			boolean isSame = false;
-			for (AttributePart attributePart1 : fieldObjects1) {
-				String attributeAsString2 = attributePart1.getFieldDecl().toString();
-				if (attributeAsString1.equals(attributeAsString2)) {
-					isSame = true;
-					attributePart2.setChangedType(InsideClassChangeType.NONE);
-					break;
-				}
-			}
-			if (isSame == false) {
-				if (similarAttributeSet.containsKey(attributePart2)) {
-					AttributePart value = similarAttributeSet.get(attributePart2);
-					attributePart2.setMatchedAttribute(value.getAttributeAsString());
-					attributePart2.setChangedType(InsideClassChangeType.MODIFIED);
-				} else if (versionType == Constants.CUR_VERSION) {
-					attributePart2.setChangedType(InsideClassChangeType.ADD);
-				} else if (versionType == Constants.PREV_VERSION) {
-					attributePart2.setChangedType(InsideClassChangeType.DELETE);
-				}
+			if (similarAttributeSet.containsKey(attributePart2)) {
+				AttributePart value = similarAttributeSet.get(attributePart2);
+				attributePart2.setMatchedAttribute(value.getAttributeAsString());
+				attributePart2.setChangedType(InsideClassChangeType.MODIFIED);
+			} else if (versionType == Constants.CUR_VERSION) {
+				attributePart2.setChangedType(InsideClassChangeType.ADD);
+			} else if (versionType == Constants.PREV_VERSION) {
+				attributePart2.setChangedType(InsideClassChangeType.DELETE);
 			}
 		}
 	}
+
 
 	private void setMethodsChangeState(List<MethodPart> methodObjects1, List<MethodPart> methodObjects2,
 			int versionType) {
@@ -156,7 +154,6 @@ public class ChangeStateIdentifier {
 			String methodAsString2 = methodPart2.getMethodAsString();
 			boolean isSame = false;
 			boolean isSameIdentifier = false;
-			HashMap<Integer, MethodPart> similarMethodSet = new HashMap<Integer, MethodPart>();
 			for (MethodPart methodPart1 : methodObjects1) {
 				String methodAsString1 = methodPart1.getMethodAsString();
 				isSameIdentifier = compareMethodIdentifier(methodPart1, methodPart2);
@@ -167,7 +164,6 @@ public class ChangeStateIdentifier {
 						List<StatementPart> methodObj2Statements = methodPart2.getStatements();
 						List<StatementPart> matchedMethodStatements = methodPart1.getStatements();
 						setModifiedMethodStatementsState(matchedMethodStatements, methodObj2Statements, versionType);
-//						methodPart2.setMatchedMethod(methodPart1);
 						break;
 					} else {
 						isSame = true;
@@ -395,4 +391,26 @@ public class ChangeStateIdentifier {
 		}
 	}
 
+	private List<AttributePart> filterAttributePart(List<AttributePart> fieldObjects1,
+			List<AttributePart> fieldObjects2) {
+		List<AttributePart> clonedFieldObjects2 = new ArrayList<AttributePart>(fieldObjects2);
+		List<AttributePart> candidateRemovalPart = new ArrayList<AttributePart>();
+		for (AttributePart attributePart2 : fieldObjects2) {
+			String attributeAsString1 = attributePart2.getFieldDecl().toString();
+			String attributeCalssName1 = attributePart2.getClassName();
+			for (AttributePart attributePart1 : fieldObjects1) {
+				String attributeAsString2 = attributePart1.getFieldDecl().toString();
+				String attributeClassName2 = attributePart1.getClassName();
+				if (attributeCalssName1.equals(attributeClassName2) && attributeAsString1.equals(attributeAsString2)) {
+					candidateRemovalPart.add(attributePart2);
+					break;
+				}
+			}
+		}
+		for (AttributePart attributePart : candidateRemovalPart) {
+			clonedFieldObjects2.remove(attributePart);
+		}
+		return clonedFieldObjects2;
+	}
+	
 }

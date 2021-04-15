@@ -55,7 +55,7 @@ import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
 
 public class TaskVisualizer extends JPanel {
-	public static final String[] legend = { "Feature Implementation", "Feature Improvement", "Refactoring" };
+	public static final String[] legend = { "Feature Implementation", "Feature Improvement", "Etc." };
 	public static final String GRAPH = "graph";
 	public static final String NODES = "graph.nodes";
 	public static final String EDGES = "graph.edges";
@@ -64,7 +64,7 @@ public class TaskVisualizer extends JPanel {
 	public static final int add_color = ColorLib.rgb(172, 251, 175);
 	public static final int delete_color = ColorLib.rgb(255, 69, 0);
 	public static final int modified_color = ColorLib.rgb(255, 255, 0);
-	public static final int FI_TASK_COLOR = ColorLib.rgb(50,205,50);
+	public static final int FI_TASK_COLOR = ColorLib.rgb(50, 205, 50);
 	public static final int FIpro_TASK_COLOR = ColorLib.rgb(246, 204, 255);
 	public static final int RF_TASK_COLOR = ColorLib.rgb(102, 204, 255);
 	public static String curCommitID = "";
@@ -123,17 +123,17 @@ public class TaskVisualizer extends JPanel {
 		defaultTreeTableBox.add(new JScrollPane());
 		defaultTreeTableBox.setVisible(true);
 		add(defaultTreeTableBox, BorderLayout.SOUTH);
-		
-		// set up the display
-        m_display = new Display(m_vis);
-        m_display.setPreferredSize(new Dimension(750, 800));
-        m_display.pan(500, 500);
-        m_display.setHighQuality(true);
-        m_display.addControlListener(new TaskVisualizerDragControl(this, defaultTreeTableBox));
-        m_display.addControlListener(new ZoomControl());
-        m_display.addControlListener(new PanControl());
 
-        add(m_display, BorderLayout.CENTER);
+		// set up the display
+		m_display = new Display(m_vis);
+		m_display.setPreferredSize(new Dimension(750, 800));
+		m_display.pan(500, 500);
+		m_display.setHighQuality(true);
+		m_display.addControlListener(new TaskVisualizerDragControl(this, defaultTreeTableBox));
+		m_display.addControlListener(new ZoomControl());
+		m_display.addControlListener(new PanControl());
+
+		add(m_display, BorderLayout.CENTER);
 		// set things running
 		m_vis.run("layout");
 	}
@@ -176,10 +176,12 @@ public class TaskVisualizer extends JPanel {
 			if (isTestCase == true && task.size() > 1) {
 				aitem.setFillColor(FI_TASK_COLOR);
 				aitem.setStrokeColor(ColorLib.rgb(213, 255, 128));
-			} else if (isTestCase == false && task.size() > 1) {
+			}
+			if (isTestCase == false && task.size() > 1) {
 				aitem.setFillColor(FIpro_TASK_COLOR);
-				aitem.setStrokeColor(ColorLib.rgb(255,20,147));
-			} else {
+				aitem.setStrokeColor(ColorLib.rgb(255, 20, 147));
+			}
+			if (task.size() == 1) {
 				aitem.setFillColor(RF_TASK_COLOR);
 				aitem.setStrokeColor(ColorLib.rgb(51, 85, 255));
 			}
@@ -243,21 +245,21 @@ public class TaskVisualizer extends JPanel {
 			}
 		}
 	}
-	
+
 	private void addLegend() {
-		
+
 		Box legendBox = new Box(BoxLayout.X_AXIS);
 		JLabel legendTitlePanel = new JLabel("legend: ");
 		legendTitlePanel.setForeground(Color.black);
 		legendTitlePanel.setFont(new Font("Bold", Font.BOLD, 25));
 		legendBox.add(Box.createHorizontalStrut(16));
 		legendBox.add(legendTitlePanel);
-		JLabel FiLabel = new JLabel(legend[0]+",");
-		FiLabel.setForeground(new Color(50,205,50));
+		JLabel FiLabel = new JLabel(legend[0] + ",");
+		FiLabel.setForeground(new Color(50, 205, 50));
 		FiLabel.setFont(new Font("Bold", Font.BOLD, 25));
 		legendBox.add(Box.createHorizontalStrut(16));
 		legendBox.add(FiLabel);
-		JLabel FIproLabel = new JLabel(legend[1]+",");
+		JLabel FIproLabel = new JLabel(legend[1] + ",");
 		FIproLabel.setForeground(new Color(246, 204, 255));
 		FIproLabel.setFont(new Font("Bold", Font.BOLD, 25));
 		legendBox.add(Box.createHorizontalStrut(24));
@@ -267,8 +269,8 @@ public class TaskVisualizer extends JPanel {
 		RFLabel.setFont(new Font("Bold", Font.BOLD, 25));
 		legendBox.add(Box.createHorizontalStrut(16));
 		legendBox.add(RFLabel);
-        add(legendBox, BorderLayout.NORTH);
-		
+		add(legendBox, BorderLayout.NORTH);
+
 	}
 
 	public JPanel showTask() {

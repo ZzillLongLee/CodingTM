@@ -2,25 +2,36 @@ package commit_task_visualization.code_change_extraction.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AssertStatement;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.LabeledStatement;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import commit_task_visualization.code_change_extraction.ast.ASTSupportSingleton;
 import commit_task_visualization.code_change_extraction.ast.ExpressionVisitor;
 import commit_task_visualization.code_change_extraction.ast.StatementVisitor;
 import commit_task_visualization.code_change_extraction.model.AttributePart;
@@ -32,8 +43,57 @@ import commit_task_visualization.code_change_extraction.model.StatementPart;
 import commit_task_visualization.code_change_extraction.model.SubCodeChunk;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 
-
 public class CodeChunkPreprocessor {
+
+	private static TypeDeclaration classNode = null;
+
+	public static String extractClassIdentifier(String classString, TypeDeclaration node) {
+		List modifiers = node.modifiers();
+		String className = node.getName().getFullyQualifiedName();
+		Javadoc javadoc = node.getJavadoc();
+		if (javadoc != null) {
+			String javaDoc = javadoc.toString();
+			classString = classString.replace(javaDoc, "");
+		}
+		Stream<String> lines = classString.lines();
+		Iterator<String> linesIter = lines.iterator();
+		while (linesIter.hasNext()) {
+			boolean hasClassName = false;
+			boolean hasModifiers = false;
+			List<Boolean> hasModifierSet = new ArrayList<Boolean>();
+			String line = (String) linesIter.next();
+			if (modifiers.size() != 0) {
+				for (Object modifier : modifiers) {
+					if (modifier instanceof Modifier) {
+						Modifier mod = (Modifier) modifier;
+						String modAsString = mod.toString();
+						if (line.contains(modAsString))
+							hasModifierSet.add(true);
+					}
+				}
+			}
+			if (line.contains(className))
+				hasClassName = true;
+
+			if (modifiers.size() != 0) {
+				hasModifiers = hasModifier(hasModifierSet);
+				if (hasClassName == true && hasModifiers == true)
+					return line;
+			} else {
+				if (hasClassName == true)
+					return line;
+			}
+		}
+		return null;
+	}
+
+	private static boolean hasModifier(List<Boolean> hasModifierSet) {
+		for (Boolean boolean1 : hasModifierSet) {
+			if (boolean1 == false)
+				return false;
+		}
+		return true;
+	}
 
 	public static SubCodeChunk generateInnerStmtData(SubCodeChunk codeChunk) {
 		StatementVisitor stmtVisitor = new StatementVisitor();
@@ -306,7 +366,7 @@ public class CodeChunkPreprocessor {
 			String connectedID = connectedMethod.getID();
 			if (idSet.containsKey(parentID)) {
 				List<String> values = idSet.get(parentID);
-				if(!values.contains(connectedID))
+				if (!values.contains(connectedID))
 					values.add(connectedID);
 			} else {
 				List<String> values = new ArrayList<String>();
@@ -323,7 +383,7 @@ public class CodeChunkPreprocessor {
 			String connectedID = connectedAttribute.getID();
 			if (idSet.containsKey(parentID)) {
 				List<String> values = idSet.get(parentID);
-				if(!values.contains(connectedID))
+				if (!values.contains(connectedID))
 					values.add(connectedID);
 			} else {
 				List<String> values = new ArrayList<String>();
