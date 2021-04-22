@@ -1,4 +1,4 @@
-package commit_task_visualization.task_visualization.dialog;
+package commit_task_visualization.single_task_visualization.dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,7 +31,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
-import commit_task_visualization.task_visualization.VisualizationConstants;
+import commit_task_visualization.single_task_visualization.VisualizationConstants;
 import prefuse.visual.VisualItem;
 
 public class TaskElementDialog {

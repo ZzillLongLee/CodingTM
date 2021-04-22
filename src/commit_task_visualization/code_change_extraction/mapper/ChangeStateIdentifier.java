@@ -26,7 +26,6 @@ import commit_task_visualization.code_change_extraction.model.StatementPart;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 import commit_task_visualization.code_change_extraction.util.Constants;
 
-
 public class ChangeStateIdentifier {
 
 	private HashMap<String, String> matchedAttributes = new HashMap<String, String>();
@@ -56,7 +55,7 @@ public class ChangeStateIdentifier {
 					prevVersionFieldObjects);
 			List<AttributePart> filteredCurVersionFieldObjects = filterAttributePart(prevVersionFieldObjects,
 					curVersionFieldObjects);
-			
+
 			HashMap<AttributePart, AttributePart> similarAttributeSet = ccsc
 					.getAttributeSimilaritySet(filteredCurVersionFieldObjects, filteredPrevVersionFieldObjects);
 			setAttributesChangeState(filteredCurVersionFieldObjects, filteredPrevVersionFieldObjects,
@@ -66,7 +65,7 @@ public class ChangeStateIdentifier {
 					filteredCurVersionFieldObjects);
 			setAttributesChangeState(filteredPrevVersionFieldObjects, filteredCurVersionFieldObjects,
 					Constants.CUR_VERSION, similarAttributeSet);
-			
+
 			// the statement compare also should be changed in near future.
 			setMethodsChangeState(curVersionMethodObjects, prevVersionMethodObjects, Constants.PREV_VERSION);
 			setMethodsChangeState(prevVersionMethodObjects, curVersionMethodObjects, Constants.CUR_VERSION);
@@ -147,7 +146,6 @@ public class ChangeStateIdentifier {
 		}
 	}
 
-
 	private void setMethodsChangeState(List<MethodPart> methodObjects1, List<MethodPart> methodObjects2,
 			int versionType) {
 		for (MethodPart methodPart2 : methodObjects2) {
@@ -160,7 +158,8 @@ public class ChangeStateIdentifier {
 				if (isSameIdentifier == true) {
 					if (methodAsString2.equals(methodAsString1) == false) {
 						methodPart2.setChangedType(InsideClassChangeType.MODIFIED);
-						// Matched ?ïòÎ©? previousÍ≤ÉÏù¥ ?Ñ§?†ï?ù¥ ?ïà?êò?äîÍ±? Í∞ôÏùå Í∑∏Îü¨ÎØ?Î°? ?ó¨Í∏∞ÏÑú ?àò?ñâ?ï¥ Î≥¥Ïù¥?äîÍ≤? ?†Å?†à?ï¥ Î≥¥ÏûÑ
+						// Matched ?ïòÎ©? previousÍ≤ÉÏù¥ ?Ñ§?†ï?ù¥ ?ïà?êò?äîÍ±? Í∞ôÏùå Í∑∏Îü¨ÎØ?Î°? ?ó¨Í∏∞ÏÑú ?àò?ñâ?ï¥ Î≥¥Ïù¥?äîÍ≤?
+						// ?†Å?†à?ï¥ Î≥¥ÏûÑ
 						List<StatementPart> methodObj2Statements = methodPart2.getStatements();
 						List<StatementPart> matchedMethodStatements = methodPart1.getStatements();
 						setModifiedMethodStatementsState(matchedMethodStatements, methodObj2Statements, versionType);
@@ -220,47 +219,50 @@ public class ChangeStateIdentifier {
 
 	private void setModifiedMethodStatementsState(List<StatementPart> stmtObjects1, List<StatementPart> stmtObjects2,
 			int versionType) {
-		for (StatementPart stmtObject2 : stmtObjects2) {
-			boolean isSame = false;
-			HashMap<Double, StatementPart> similarStatementSet = new HashMap<Double, StatementPart>();
-			Statement object2Stmt = stmtObject2.getStmt();
-			String methodObj2StmtString = stmtObject2.stmtAsString();
-			List<String> stmtPart2Names = stmtObject2.getNames();
-			for (StatementPart stmtObject1 : stmtObjects1) {
-				Statement object1Stmt = stmtObject1.getStmt();
-				String prevMethodStmtString = stmtObject1.stmtAsString();
-				List<String> stmtPart1Names = stmtObject1.getNames();
-				if (methodObj2StmtString.equals(prevMethodStmtString)) {
-					isSame = true;
-					stmtObject2.setChangedType(InsideClassChangeType.NONE);
-					break;
+		if (stmtObjects2 != null && stmtObjects1 != null) {
+			for (StatementPart stmtObject2 : stmtObjects2) {
+				boolean isSame = false;
+				HashMap<Double, StatementPart> similarStatementSet = new HashMap<Double, StatementPart>();
+				Statement object2Stmt = stmtObject2.getStmt();
+				String methodObj2StmtString = stmtObject2.stmtAsString();
+				List<String> stmtPart2Names = stmtObject2.getNames();
+				for (StatementPart stmtObject1 : stmtObjects1) {
+					Statement object1Stmt = stmtObject1.getStmt();
+					String prevMethodStmtString = stmtObject1.stmtAsString();
+					List<String> stmtPart1Names = stmtObject1.getNames();
+					if (methodObj2StmtString.equals(prevMethodStmtString)) {
+						isSame = true;
+						stmtObject2.setChangedType(InsideClassChangeType.NONE);
+						break;
+					}
+					if (object2Stmt.getClass().isInstance(object1Stmt)) {
+						double similarityValue = computeSimilarity(stmtPart1Names, stmtPart2Names, versionType);
+						similarStatementSet.put(similarityValue, stmtObject1);
+					}
 				}
-				if (object2Stmt.getClass().isInstance(object1Stmt)) {
-					double similarityValue = computeSimilarity(stmtPart1Names, stmtPart2Names, versionType);
-					similarStatementSet.put(similarityValue, stmtObject1);
-				}
-			}
-			if (isSame == false) {
-				double minValue = 0;
-				int idx = 0;
-				Set<Entry<Double, StatementPart>> entrySet = similarStatementSet.entrySet();
-				for (Entry<Double, StatementPart> entry : entrySet) {
-					Double distanceValue = entry.getKey();
-					if (idx == 0)
-						minValue = distanceValue;
-					else if (distanceValue < minValue)
-						minValue = distanceValue;
-					idx++;
-				}
-				if (0.0 < minValue && minValue < Constants.MODIFIED_STATUS_THRESHOLD_VALUE) {
-					stmtObject2.setChangedType(InsideClassChangeType.MODIFIED);
-					StatementPart bestMatchVar = similarStatementSet.get(minValue);
-					setDetailContents(stmtObject2, bestMatchVar);
-					// Switch, if , while. for, for each?ì±?óê ???ïú ExpressionÍ≥? bodyÎ•? ÎπÑÍµê?ïòÍ∏? ?úÑ?ïú ?Ç¥?ö© ?ïÑ?öî
-				} else if (versionType == Constants.CUR_VERSION) {
-					stmtObject2.setChangedType(InsideClassChangeType.ADD);
-				} else if (versionType == Constants.PREV_VERSION) {
-					stmtObject2.setChangedType(InsideClassChangeType.DELETE);
+				if (isSame == false) {
+					double minValue = 0;
+					int idx = 0;
+					Set<Entry<Double, StatementPart>> entrySet = similarStatementSet.entrySet();
+					for (Entry<Double, StatementPart> entry : entrySet) {
+						Double distanceValue = entry.getKey();
+						if (idx == 0)
+							minValue = distanceValue;
+						else if (distanceValue < minValue)
+							minValue = distanceValue;
+						idx++;
+					}
+					if (0.0 < minValue && minValue < Constants.MODIFIED_STATUS_THRESHOLD_VALUE) {
+						stmtObject2.setChangedType(InsideClassChangeType.MODIFIED);
+						StatementPart bestMatchVar = similarStatementSet.get(minValue);
+						setDetailContents(stmtObject2, bestMatchVar);
+						// Switch, if , while. for, for each?ì±?óê ???ïú ExpressionÍ≥? bodyÎ•? ÎπÑÍµê?ïòÍ∏? ?úÑ?ïú
+						// ?Ç¥?ö© ?ïÑ?öî
+					} else if (versionType == Constants.CUR_VERSION) {
+						stmtObject2.setChangedType(InsideClassChangeType.ADD);
+					} else if (versionType == Constants.PREV_VERSION) {
+						stmtObject2.setChangedType(InsideClassChangeType.DELETE);
+					}
 				}
 			}
 		}
@@ -412,5 +414,5 @@ public class ChangeStateIdentifier {
 		}
 		return clonedFieldObjects2;
 	}
-	
+
 }

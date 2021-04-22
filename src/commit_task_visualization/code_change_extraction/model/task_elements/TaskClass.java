@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import commit_task_visualization.code_change_extraction.model.ClassPart;
+import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 
 
 public class TaskClass extends TaskElement implements Serializable{

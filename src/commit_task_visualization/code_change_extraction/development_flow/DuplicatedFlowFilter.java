@@ -14,6 +14,7 @@ import commit_task_visualization.code_change_extraction.model.SubCodeChunk;
 public class DuplicatedFlowFilter {
 
 	private boolean isMethodFlow = false;
+	private MethodPart causedByMethod = null;
 
 	public DuplicatedFlowFilter() {
 
@@ -103,6 +104,9 @@ public class DuplicatedFlowFilter {
 							if (connectedMethod.getID().equals(codePartID))
 								return true;
 							else {
+								if(causedByMethod != null && causedByMethod.equals(connectedMethod))
+									return true;
+								causedByMethod = clonedMethodPart;
 								validationValue = searchID(codePartID, connectedMethod);
 								if(validationValue == true)
 									return validationValue;

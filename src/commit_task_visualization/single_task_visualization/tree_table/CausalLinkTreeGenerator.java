@@ -1,11 +1,11 @@
-package commit_task_visualization.task_visualization.tree_table;
+package commit_task_visualization.single_task_visualization.tree_table;
 
 import java.util.Iterator;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.commons.collections4.map.HashedMap;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.util.Constants;
-import commit_task_visualization.task_visualization.VisualizationConstants;
+import commit_task_visualization.single_task_visualization.VisualizationConstants;
 import prefuse.data.Node;
 import prefuse.visual.tuple.TableEdgeItem;
 

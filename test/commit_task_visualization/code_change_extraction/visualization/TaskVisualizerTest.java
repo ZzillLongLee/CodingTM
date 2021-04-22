@@ -17,7 +17,7 @@ import commit_task_visualization.code_change_extraction.model.task_elements.Task
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElementRepo;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElementUtil;
-import commit_task_visualization.task_visualization.TaskVisualizer;
+import commit_task_visualization.single_task_visualization.TaskVisualizer;
 
 public class TaskVisualizerTest {
 	

@@ -1,4 +1,4 @@
-package commit_task_visualization.task_visualization;
+package commit_task_visualization.single_task_visualization;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,8 +13,8 @@ import javax.swing.Box;
 import javax.swing.SwingUtilities;
 
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
-import commit_task_visualization.task_visualization.dialog.TaskElementDialog;
-import commit_task_visualization.task_visualization.tree_table.TreeTableView;
+import commit_task_visualization.single_task_visualization.dialog.TaskElementDialog;
+import commit_task_visualization.single_task_visualization.tree_table.TreeTableView;
 import prefuse.Display;
 import prefuse.controls.ControlAdapter;
 import prefuse.data.Node;

@@ -1,4 +1,4 @@
-package commit_task_visualization.task_visualization;
+package commit_task_visualization.single_task_visualization;
 
 import java.util.Iterator;
 

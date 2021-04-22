@@ -1,4 +1,4 @@
-package commit_task_visualization.task_visualization.dialog;
+package commit_task_visualization.single_task_visualization.dialog;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
 import commit_task_visualization.code_change_extraction.util.Constants;
-import commit_task_visualization.task_visualization.TaskVisualizer;
+import commit_task_visualization.single_task_visualization.TaskVisualizer;
 
 
 public class StatementTableModel extends AbstractTableModel {

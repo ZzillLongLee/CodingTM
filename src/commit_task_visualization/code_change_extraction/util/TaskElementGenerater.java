@@ -16,6 +16,7 @@ import commit_task_visualization.code_change_extraction.model.task_elements.Task
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskAttribute.TaskAttributeBuilder;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskMethod.TaskMethodBuilder;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement.TaskStatementBuilder;
+import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 
 
 public class TaskElementGenerater {
@@ -30,6 +31,9 @@ public class TaskElementGenerater {
 		boolean isAttributeNull = true;
 
 		for (ClassPart classPart : classPartSet) {
+			InsideClassChangeType classIdentifierState = classPart.getClassIdentifierState();
+			if(classIdentifierState == null)
+				classPart.setClassIdentifierState(InsideClassChangeType.NONE);
 			TaskClass ccc = new TaskClass(classPart);
 			List<AttributePart> attributeParts = classPart.getAttributeParts();
 			List<MethodPart> methodParts = classPart.getMethodParts();

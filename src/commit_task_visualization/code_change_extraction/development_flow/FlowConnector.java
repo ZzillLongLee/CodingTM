@@ -16,12 +16,12 @@ import commit_task_visualization.code_change_extraction.model.sub_chunk.MethodIn
 import commit_task_visualization.code_change_extraction.model.sub_chunk.QualifiedNamePart;
 import commit_task_visualization.code_change_extraction.util.Constants;
 
-
 public class FlowConnector {
 
 	private List<MethodPart> methodPartSet;
 	private List<ClassPart> interfaceClassSet;
 	private List<ClassPart> abstractClassSet;
+	private MethodPart causedByMethod;
 
 	public FlowConnector(List<MethodPart> methodPartSet, List<ClassPart> interfaceClassSet,
 			List<ClassPart> abstractClassSet) {
@@ -48,7 +48,12 @@ public class FlowConnector {
 					MethodDeclaration stmtMethod = stmtPart.getMethodDecl();
 					if (stmtMethod.equals(methodPart.getMethodDecl())) {
 						break;
+					}
+					if (causedByMethod != null
+							&& causedByMethod.getMethodDecl().equals(stmtMethod)) {
+						break;
 					} else {
+						causedByMethod = methodPart;
 						stmtPart.setConnectedMethod(methodPart);
 						MethodPart connectedMethod = stmtPart.getConnectedSingleMethod(methodPart);
 
@@ -217,7 +222,7 @@ public class FlowConnector {
 					for (MethodPart interfaceMethodPart : interfaceMethodParts) {
 						String interfaceMethodName = interfaceMethodPart.getMethodName();
 						int interfaceMethodParamSize = interfaceMethodPart.getParametersSize();
-						if(methodName.equals(interfaceMethodName)&&methodParamSize == interfaceMethodParamSize)
+						if (methodName.equals(interfaceMethodName) && methodParamSize == interfaceMethodParamSize)
 							abstractMethodList.add(interfaceMethodPart);
 					}
 				}
@@ -229,7 +234,7 @@ public class FlowConnector {
 					for (MethodPart abstractMethodPart : abstractMethodParts) {
 						String interfaceMethodName = abstractMethodPart.getMethodName();
 						int interfaceMethodParamSize = abstractMethodPart.getParametersSize();
-						if(methodName.equals(interfaceMethodName)&&methodParamSize == interfaceMethodParamSize)
+						if (methodName.equals(interfaceMethodName) && methodParamSize == interfaceMethodParamSize)
 							abstractMethodList.add(abstractMethodPart);
 					}
 				}
@@ -250,5 +255,5 @@ public class FlowConnector {
 		}
 		return null;
 	}
-	
+
 }
