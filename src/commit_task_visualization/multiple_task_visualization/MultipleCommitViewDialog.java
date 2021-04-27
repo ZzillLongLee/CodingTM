@@ -174,6 +174,7 @@ public class MultipleCommitViewDialog extends Dialog {
 		natTable = new NatTable(container, gridLayer, false);
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new SingleClickSortConfiguration());
+		natTable.addConfiguration(new CellMenuConfiguration(natTable, commitDataList, columnGroupModel));
 		natTable.addMouseListener(new MouseListener() {
 
 			@Override
