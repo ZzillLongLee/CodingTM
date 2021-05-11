@@ -150,12 +150,14 @@ public class ChangeStateIdentifier {
 			int versionType) {
 		for (MethodPart methodPart2 : methodObjects2) {
 			String methodAsString2 = methodPart2.getMethodAsString();
+			String className2 = methodPart2.getClassName();
 			boolean isSame = false;
 			boolean isSameIdentifier = false;
 			for (MethodPart methodPart1 : methodObjects1) {
 				String methodAsString1 = methodPart1.getMethodAsString();
+				String className1 = methodPart1.getClassName();
 				isSameIdentifier = compareMethodIdentifier(methodPart1, methodPart2);
-				if (isSameIdentifier == true) {
+				if (className2.equals(className1)&&isSameIdentifier == true) {
 					if (methodAsString2.equals(methodAsString1) == false) {
 						methodPart2.setChangedType(InsideClassChangeType.MODIFIED);
 						// Matched ?•˜ë©? previousê²ƒì´ ?„¤? •?´ ?•ˆ?˜?Š”ê±? ê°™ìŒ ê·¸ëŸ¬ë¯?ë¡? ?—¬ê¸°ì„œ ?ˆ˜?–‰?•´ ë³´ì´?Š”ê²?

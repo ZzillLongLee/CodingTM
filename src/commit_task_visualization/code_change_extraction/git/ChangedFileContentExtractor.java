@@ -111,11 +111,11 @@ public class ChangedFileContentExtractor {
 			List<MethodPart> prevVersionMethodObjects = new ArrayList<MethodPart>();
 
 			if (prevVersionSourceCode != null) {
-				astSupport.parse(prevVersionSourceCode, new SourceCodeVisitor(curCommit.getId().toString(),
+				astSupport.parse(prevVersionSourceCode, new SourceCodeVisitor(prevCommit.getId().toString(),
 						prevClsParts, prevVersionFieldObjects, prevVersionMethodObjects, prevChangedFilePath));
 			}
 			if (curVersionSourceCode != null) {
-				astSupport.parse(curVersionSourceCode, new SourceCodeVisitor(prevCommit.getId().toString(), curClsParts,
+				astSupport.parse(curVersionSourceCode, new SourceCodeVisitor(curCommit.getId().toString(), curClsParts,
 						curVersionFieldObjects, curVersionMethodObjects, curChangedFilePath));
 			}
 			ChangedFilePart changedFilePart = new ChangedFilePart.ChnagedFilePartBuilder(changeType, curChangedFilePath,
