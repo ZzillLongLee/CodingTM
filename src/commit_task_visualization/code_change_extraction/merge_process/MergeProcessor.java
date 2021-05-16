@@ -161,8 +161,8 @@ public class MergeProcessor {
 		List<TaskStatement> mergedStmts = mergeStatements(targetStmts, stmts);
 		targetTM.setStatementsSet(mergedStmts);
 
-		List<TaskMethod> targetChildTMs = targetTM.getChildTM();
-		List<TaskMethod> childTMs = tm.getChildTM();
+		List<TaskMethod> targetChildTMs = targetTM.getChildTMs();
+		List<TaskMethod> childTMs = tm.getChildTMs();
 		List<TaskMethod> mergedChildTMs = Stream.concat(targetChildTMs.stream(), childTMs.stream())
 				.collect(Collectors.toList());
 		targetTM.setChildTMs(mergedChildTMs);

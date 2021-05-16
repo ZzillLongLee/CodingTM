@@ -58,8 +58,9 @@ public class CausalLinkTreeGenerator {
 		String teID = te.getTaskElementID();
 		String changeType = te.getChangedType();
 		String[] splitedID = teID.split(Constants.SEPERATOR);
+		String className = splitedID[splitedID.length - 2];
 		String nodeValue = splitedID[splitedID.length - 1];
-		DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(changeType + ": " + nodeValue);
+		DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(changeType + ": " + className + "@" + nodeValue);
 		tableNodeMap.put(treeNode, te);
 		return treeNode;
 	}

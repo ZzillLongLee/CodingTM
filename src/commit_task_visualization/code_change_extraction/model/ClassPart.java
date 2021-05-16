@@ -19,7 +19,7 @@ public class ClassPart implements Serializable {
 
 	private boolean isAbstract;
 	private boolean isInterface;
-	private String superClassName;
+	private List<String> parentClasses;
 	private InsideClassChangeType classIdentifierState;
 	private String classIdentifier;
 	private String className;
@@ -31,6 +31,8 @@ public class ClassPart implements Serializable {
 	private String uniqueID;
 	private List modifiers;
 	private String classString;
+	private int methodSize;
+	private int attributeSize;
 
 	public ClassPart(String packageName, TypeDeclaration node) {
 		this.classString = node.toString();
@@ -55,12 +57,12 @@ public class ClassPart implements Serializable {
 		this.isInterface = isInterface;
 	}
 
-	public String getSuperClassName() {
-		return superClassName;
+	public List<String> getParentClassesNames() {
+		return parentClasses;
 	}
 
-	public void setSuperClassName(String superClassName) {
-		this.superClassName = superClassName;
+	public void setParentClasses(List<String> parentClasses) {
+		this.parentClasses = parentClasses;
 	}
 
 	public InsideClassChangeType getClassIdentifierState() {
@@ -109,6 +111,22 @@ public class ClassPart implements Serializable {
 
 	public String getID() {
 		return uniqueID;
+	}
+
+	public int getMethodSize() {
+		return methodSize;
+	}
+
+	public void setMethodSize(int methodSize) {
+		this.methodSize = methodSize;
+	}
+
+	public int getAttributeSize() {
+		return attributeSize;
+	}
+
+	public void setAttributeSize(int attributeSize) {
+		this.attributeSize = attributeSize;
 	}
 
 }

@@ -68,13 +68,16 @@ public class TaskElementUtil {
 					buildCausalRelationShip(connectedTA, taskElementRepo);
 				}
 				List<TaskMethod> connectedTMs = taskMethod.getConnectedTMs();
+				List<TaskMethod> childTMs = taskMethod.getChildTMs();
+				if(childTMs.size() != 0)
+					connectedTMs.addAll(childTMs);
 				for (TaskMethod connectedTM : connectedTMs) {
 					buildCausalRelationShip(connectedTM, taskElementRepo);
 				}
-				List<TaskElement> causedTo = buildCRsetAsList(connectedTAs, connectedTMs);
+				List<TaskElement> causedToAsList = buildCRsetAsList(connectedTAs, connectedTMs);
 
 				taskMethod.setCausedBy(cuasedByAsList);
-				taskMethod.setCausedTo(causedTo);
+				taskMethod.setCausedTo(causedToAsList);
 
 				taskElementRepo.putTaskElement(taskMethod.getTaskElementID(), taskMethod);
 			}

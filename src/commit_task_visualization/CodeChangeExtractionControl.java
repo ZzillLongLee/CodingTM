@@ -133,6 +133,7 @@ public class CodeChangeExtractionControl {
 		}
 		mp.updateCausalRel(taskElementHashmap, taskElementRepo);
 		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
+		System.out.println("Link Size:" + taskElementRepo.getTaskElementHashMap().size());
 		List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
 		return new CommitData(curCommitID, prevCommitID, taskList, taskElementHashmap);
 	}

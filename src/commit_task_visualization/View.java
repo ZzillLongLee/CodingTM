@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
@@ -63,6 +62,8 @@ public class View extends ViewPart {
 	private List<CodeSnapShot> commitList;
 
 	private boolean isClicked = false;
+	
+	private boolean isRegen = false;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -223,8 +224,12 @@ public class View extends ViewPart {
 						dialog.open();
 					} else {
 						MessageBox msgDialog = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
-						msgDialog.setMessage("The git repository object is already exist.");
-						msgDialog.open();
+						msgDialog.setMessage("The git repository object is already exist.\n Do you want to remove git repository object?");
+						int i = msgDialog.open();
+						if(i == SWT.OK) {
+							gitRepositoryGen = null;
+							isRegen = true;
+						}
 					}
 				}
 			}
@@ -285,12 +290,22 @@ public class View extends ViewPart {
 						msgDialog.setMessage("The Git Control module is null.");
 						msgDialog.open();
 					}
-					if (ccec != null && gitRepositoryGen != null) {
+					if (ccec != null && gitRepositoryGen != null && isRegen == false) {
 						if (!searchText.getText().equals(defaultString)) {
 							commitList = ccec.getCommitList(searchText.getText());
 							isClicked = true;
 							commitTableViewer.setInput(commitList);
 							commitTableViewer.getTable().redraw();
+						}
+					}
+					if (ccec != null && gitRepositoryGen != null && isRegen == true) {
+						if (!searchText.getText().equals(defaultString)) {
+							ccec.init(gitRepositoryGen);
+							commitList = ccec.getCommitList(searchText.getText());
+							isClicked = true;
+							commitTableViewer.setInput(commitList);
+							commitTableViewer.getTable().redraw();
+							isRegen = false;
 						}
 					}
 				}

@@ -12,7 +12,6 @@ import commit_task_visualization.code_change_extraction.model.SubCodeChunk;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 import commit_task_visualization.code_change_extraction.util.Constants;
 
-
 public class DevelopmentFlowGenerator {
 
 	private SubCodeChunk codeChunk;
@@ -49,10 +48,12 @@ public class DevelopmentFlowGenerator {
 		if (classPartSet != null) {
 			collectParentClassSet();
 			for (ClassPart classPart : classPartSet) {
-				String superClassName = classPart.getSuperClassName();
-				if (superClassName != null) {
-					connectFlowClass(classPart, superClassName, abstractClassSet);
-					connectFlowClass(classPart, superClassName, interfaceClassSet);
+				List<String> parentClasses = classPart.getParentClassesNames();
+				if (parentClasses.size() != 0) {
+					for (String parentClass : parentClasses) {
+						connectFlowClass(classPart, parentClass, abstractClassSet);
+						connectFlowClass(classPart, parentClass, interfaceClassSet);
+					}
 				}
 			}
 			assignMethodToHierarchyClasses(abstractClassSet, interfaceClassSet);
@@ -73,12 +74,14 @@ public class DevelopmentFlowGenerator {
 					// starting point from test case method
 					if (testClassName.equals(testMethodClassName)) {
 						List<StatementPart> statements = testMethodPart.getStatements();
-						for (StatementPart stmtPart : statements) {
-							checkUsedPart(testMethodPartSet, Constants.TEST_METHOD_TRAVERSE, testMethodPart);
-							// this part might need to be added to connect method in test class.
-							checkIncludeTestMethod(stmtPart, clonedTestMethodPartSet);
-							flowConnector.connectFlow(stmtPart, attributePartSet, methodPartSet,
-									Constants.TEST_METHOD_TRAVERSE);
+						if (statements != null) {
+							for (StatementPart stmtPart : statements) {
+								checkUsedPart(testMethodPartSet, Constants.TEST_METHOD_TRAVERSE, testMethodPart);
+								// this part might need to be added to connect method in test class.
+								checkIncludeTestMethod(stmtPart, clonedTestMethodPartSet);
+								flowConnector.connectFlow(stmtPart, attributePartSet, methodPartSet,
+										Constants.TEST_METHOD_TRAVERSE);
+							}
 						}
 					}
 				}
@@ -111,28 +114,28 @@ public class DevelopmentFlowGenerator {
 			List<ClassPart> connectedClasses = interfaceClass.getConnectedParts();
 			for (MethodPart methodPart : methodPartSet) {
 				String methodClassNmae = methodPart.getClassName();
-				if(className.equals(methodClassNmae)) {
+				if (className.equals(methodClassNmae)) {
 					interfaceClass.setMethodPart(methodPart);
 				}
 				for (ClassPart connectedClass : connectedClasses) {
 					String connectedClassName = connectedClass.getClassName();
-					if(connectedClassName.equals(methodClassNmae))
+					if (connectedClassName.equals(methodClassNmae))
 						connectedClass.setMethodPart(methodPart);
 				}
 			}
 		}
-		
+
 		for (ClassPart abstractClass : abstractClassSet) {
 			String className = abstractClass.getClassName();
 			List<ClassPart> connectedClasses = abstractClass.getConnectedParts();
 			for (MethodPart methodPart : methodPartSet) {
 				String methodClassNmae = methodPart.getClassName();
-				if(className.equals(methodClassNmae)) {
+				if (className.equals(methodClassNmae)) {
 					abstractClass.setMethodPart(methodPart);
 				}
 				for (ClassPart connectedClass : connectedClasses) {
 					String connectedClassName = connectedClass.getClassName();
-					if(connectedClassName.equals(methodClassNmae))
+					if (connectedClassName.equals(methodClassNmae))
 						connectedClass.setMethodPart(methodPart);
 				}
 			}
@@ -152,7 +155,8 @@ public class DevelopmentFlowGenerator {
 					for (MethodPart connectedMethodPart : connectedMethodParts) {
 						String connectedMethodName = connectedMethodPart.getMethodName();
 						int connectedMethodParamSize = connectedMethodPart.getParametersSize();
-						if(parentMethodName.equals(connectedMethodName) && parentMethodParamSize == connectedMethodParamSize) {
+						if (parentMethodName.equals(connectedMethodName)
+								&& parentMethodParamSize == connectedMethodParamSize) {
 							parentMethodPart.linkChildMethod(connectedMethodPart);
 						}
 					}
@@ -166,10 +170,10 @@ public class DevelopmentFlowGenerator {
 
 	}
 
-	private void connectFlowClass(ClassPart classPart, String superClassName, List<ClassPart> parentClassSet) {
+	private void connectFlowClass(ClassPart classPart, String targetClass, List<ClassPart> parentClassSet) {
 		for (ClassPart parentClass : parentClassSet) {
 			String parentClassName = parentClass.getClassName();
-			if (parentClassName.equals(superClassName))
+			if (parentClassName.equals(targetClass))
 				parentClass.setConnectFlow(classPart);
 		}
 	}
@@ -178,9 +182,9 @@ public class DevelopmentFlowGenerator {
 		for (ClassPart classPart : classPartSet) {
 			if (classPart.getClassIdentifierState() == InsideClassChangeType.ADD
 					|| classPart.getClassIdentifierState() == InsideClassChangeType.MODIFIED) {
-				if (classPart.isAbstract())
+				if (classPart.isAbstract() && !abstractClassSet.contains(classPart))
 					abstractClassSet.add(classPart);
-				if (classPart.isInterface())
+				if (classPart.isInterface() && !abstractClassSet.contains(classPart))
 					interfaceClassSet.add(classPart);
 			}
 		}

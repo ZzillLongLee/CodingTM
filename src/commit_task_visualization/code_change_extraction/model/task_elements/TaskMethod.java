@@ -61,7 +61,7 @@ public class TaskMethod extends TaskElement implements Cloneable, Serializable {
 		return curID;
 	}
 
-	public List<TaskMethod> getChildTM() {
+	public List<TaskMethod> getChildTMs() {
 		return childTMs;
 	}
 
@@ -81,10 +81,10 @@ public class TaskMethod extends TaskElement implements Cloneable, Serializable {
 		this.methodSignature = methodSignature;
 	}
 
-	public void setChildTMs(List<TaskMethod> childTM) {
+	public void setChildTMs(List<TaskMethod> childTMs) {
 		if(childTMs.size()!=0)
 			childTMs.clear();
-		this.childTMs = childTM;
+		this.childTMs = childTMs;
 	}
 
 	public void setConnectedTMs(List<TaskMethod> connectedTMs) {

@@ -1,5 +1,6 @@
 package commit_task_visualization.code_change_extraction.ast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -16,7 +18,6 @@ import commit_task_visualization.code_change_extraction.model.AttributePart;
 import commit_task_visualization.code_change_extraction.model.ClassPart;
 import commit_task_visualization.code_change_extraction.model.MethodPart;
 import commit_task_visualization.code_change_extraction.util.Constants;
-
 
 public class SourceCodeVisitor extends ASTVisitor {
 
@@ -35,7 +36,7 @@ public class SourceCodeVisitor extends ASTVisitor {
 	}
 
 	public boolean visit(PackageDeclaration node) {
-		packageName = commitID.trim()+ Constants.SEPERATOR + node.getName().getFullyQualifiedName();
+		packageName = commitID.trim() + Constants.SEPERATOR + node.getName().getFullyQualifiedName();
 		return true;
 	}
 
@@ -44,10 +45,10 @@ public class SourceCodeVisitor extends ASTVisitor {
 		ClassPart classPart = new ClassPart(packageName, node);
 		// handling nested classes
 		Type superClass = node.getSuperclassType();
+		List superInterfaceClasses = node.superInterfaceTypes();
 		List modifiers = node.modifiers();
-		if (superClass != null) {
-			classPart.setSuperClassName(superClass.toString());
-		}
+		List<String> superClasses = buildSuperClassesSet(superClass, superInterfaceClasses);
+		classPart.setParentClasses(superClasses);
 		if (node.isInterface() == true)
 			classPart.setInterface(true);
 
@@ -58,10 +59,10 @@ public class SourceCodeVisitor extends ASTVisitor {
 					classPart.setAbstract(true);
 			}
 		}
-		classParts.add(classPart);
 
 		SimpleName className = node.getName();
 		FieldDeclaration[] fields = node.getFields();
+		classPart.setAttributeSize(fields.length);
 		for (FieldDeclaration fieldDeclaration : fields) {
 			String field = fieldDeclaration.toString();
 
@@ -71,6 +72,7 @@ public class SourceCodeVisitor extends ASTVisitor {
 			fieldObjects.add(attributePart);
 		}
 		MethodDeclaration[] methods = node.getMethods();
+		classPart.setMethodSize(methods.length);
 		for (MethodDeclaration methodDeclaration : methods) {
 //			if (methodDeclaration.getBody() != null) {
 			MethodVisitor methodParser = new MethodVisitor(methodDeclaration, className);
@@ -78,7 +80,21 @@ public class SourceCodeVisitor extends ASTVisitor {
 			methodObjects.add(new MethodPart(packageName, methodDeclaration, statements, className));
 //			}
 		}
+		classParts.add(classPart);
 		return true;
+	}
+
+	private List<String> buildSuperClassesSet(Type superClass, List superInterfaceClasses) {
+		List<String> superClasses = new ArrayList<String>();
+		if (superClass != null)
+			superClasses.add(superClass.toString());
+		for (Object obj : superInterfaceClasses) {
+			if (obj instanceof SimpleType) {
+				SimpleType interfaceClass = (SimpleType) obj;
+				superClasses.add(interfaceClass.toString());
+			}
+		}
+		return superClasses;
 	}
 
 }

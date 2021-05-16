@@ -117,13 +117,21 @@ public class ChangeStateIdentifier {
 				String prevClassIdentifier = classPart1.getClassIdentifier();
 				String classPart1Name = classPart1.getClassName().toString();
 				if (classPart2Name.equals(classPart1Name)) {
+					int curAttributeSize = classPart2.getAttributeSize();
+					int curMethodSize = classPart2.getMethodSize();
+					int prevAttributeSize = classPart1.getAttributeSize();
+					int prevMethodSize = classPart1.getMethodSize();
+					if(curAttributeSize == prevAttributeSize && curMethodSize == prevMethodSize) {
+						classPart2.setClassIdentifierState(InsideClassChangeType.NONE);
+						classPart1.setClassIdentifierState(InsideClassChangeType.NONE);
+					}else {
+						classPart2.setClassIdentifierState(InsideClassChangeType.MODIFIED);
+						classPart1.setClassIdentifierState(InsideClassChangeType.MODIFIED);
+					}
 					if (curClassIdentifier != null && prevClassIdentifier != null) {
 						if (!curClassIdentifier.equals(prevClassIdentifier)) {
 							classPart2.setClassIdentifierState(InsideClassChangeType.MODIFIED);
 							classPart1.setClassIdentifierState(InsideClassChangeType.MODIFIED);
-						} else {
-							classPart2.setClassIdentifierState(InsideClassChangeType.NONE);
-							classPart1.setClassIdentifierState(InsideClassChangeType.NONE);
 						}
 					}
 				}
@@ -134,10 +142,14 @@ public class ChangeStateIdentifier {
 	private void setAttributesChangeState(List<AttributePart> fieldObjects1, List<AttributePart> fieldObjects2,
 			int versionType, HashMap<AttributePart, AttributePart> similarAttributeSet) {
 		for (AttributePart attributePart2 : fieldObjects2) {
+			String className2 = attributePart2.getClassName();
 			if (similarAttributeSet.containsKey(attributePart2)) {
 				AttributePart value = similarAttributeSet.get(attributePart2);
-				attributePart2.setMatchedAttribute(value.getAttributeAsString());
-				attributePart2.setChangedType(InsideClassChangeType.MODIFIED);
+				String similairAttrClassName = value.getClassName();
+				if(className2.equals(similairAttrClassName)) {
+					attributePart2.setMatchedAttribute(value.getAttributeAsString());
+					attributePart2.setChangedType(InsideClassChangeType.MODIFIED);
+				}
 			} else if (versionType == Constants.CUR_VERSION) {
 				attributePart2.setChangedType(InsideClassChangeType.ADD);
 			} else if (versionType == Constants.PREV_VERSION) {

@@ -108,13 +108,6 @@ class TaskVisualizerDragControl extends ControlAdapter {
 		d.getAbsoluteCoordinate(e.getPoint(), down);
 		if (item instanceof AggregateItem)
 			setFixed(item, true);
-//		if (item instanceof Node && e.getClickCount() == VisualizationConstants.DOUBLE_CLICK) {
-//			Object obj = item.get(VisualizationConstants.TASKELEMENT);
-//			if (obj instanceof TaskElement) {
-//				TaskElement te = (TaskElement) obj;
-//				teDialog.drawDialog(te, x, y);
-//			}
-//		}
 		if (item instanceof Node && e.getClickCount() == VisualizationConstants.CLICK) {
 			Node node = (Node) item;
 			Iterator edges = node.edges();
