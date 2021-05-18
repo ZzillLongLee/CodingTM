@@ -80,7 +80,7 @@ public class DevelopmentFlowGenerator {
 								// this part might need to be added to connect method in test class.
 								checkIncludeTestMethod(stmtPart, clonedTestMethodPartSet);
 								flowConnector.connectFlow(stmtPart, attributePartSet, methodPartSet,
-										Constants.TEST_METHOD_TRAVERSE);
+										Constants.TEST_METHOD_TRAVERSE, null);
 							}
 						}
 					}
@@ -98,7 +98,7 @@ public class DevelopmentFlowGenerator {
 						if (statements != null) {
 							for (StatementPart stmtPart : statements) {
 								flowConnector.connectFlow(stmtPart, attributePartSet, clonedMethodPartSet,
-										Constants.ORDINARY_METHOD_TRAVERSE);
+										Constants.ORDINARY_METHOD_TRAVERSE, null);
 							}
 							methodPart.setUsed(true);
 						}

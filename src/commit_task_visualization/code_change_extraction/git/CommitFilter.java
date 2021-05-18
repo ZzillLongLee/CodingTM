@@ -37,31 +37,37 @@ public class CommitFilter {
 	public List<CodeSnapShot> filterCommits(Iterable<RevCommit> commits, String keyWord)
 			throws IOException, GitAPIException {
 		List<CodeSnapShot> codeChunkList = new ArrayList<CodeSnapShot>();
-		RevCommit targetCommit = null;
 		for (RevCommit commit : commits) {
-			if (targetCommit != null) {
-				String commitMsg = targetCommit.getFullMessage();
-				AbstractTreeIterator newTreeIterator = getCanonicalTreeParser(targetCommit);
-				AbstractTreeIterator oldTreeIterator = getCanonicalTreeParser(commit);
-				List<DiffEntry> diffs = git.diff().setNewTree(newTreeIterator).setOldTree(oldTreeIterator).call();
-				if (targetCommit.getId().toString().contains(keyWord)) {
-					System.out.println("Commit MSG:" + commitMsg);
-					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(commit, targetCommit, diffContents));
-				} else if (commitMsg.contains(keyWord)) {
-					System.out.println("Commit MSG:" + commitMsg);
-					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(commit, targetCommit, diffContents));
-				} else if (keyWord.equals(Constants.KEY_WORD_EMPTY)) {
-					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(commit, targetCommit, diffContents));
-				}
+			String commitMsg = commit.getFullMessage();
+			List<DiffEntry> diffs;
+			if (commit.getId().toString().contains(keyWord)) {
+				System.out.println("Commit MSG:" + commitMsg);
+				RevCommit[] prevCommit = commit.getParents();
+				diffs = generateDiff(prevCommit[0], commit);
+				HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
+				codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+			} else if (commitMsg.contains(keyWord)) {
+				System.out.println("Commit MSG:" + commitMsg);
+				RevCommit[] prevCommit = commit.getParents();
+				diffs = generateDiff(prevCommit[0], commit);
+				HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
+				codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+			} else if (keyWord.equals(Constants.KEY_WORD_EMPTY)) {
+				RevCommit[] prevCommit = commit.getParents();
+				diffs = generateDiff(prevCommit[0], commit);
+				HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
+				codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
 			}
-			// This previous commit is the after version of commit.
-			targetCommit = commit;
 		}
 		misDiffMerge(codeChunkList);
 		return codeChunkList;
+	}
+
+	private List<DiffEntry> generateDiff(RevCommit prevCommit, RevCommit commit) throws IOException, GitAPIException {
+		AbstractTreeIterator newTreeIterator = getCanonicalTreeParser(commit);
+		AbstractTreeIterator oldTreeIterator = getCanonicalTreeParser(prevCommit);
+		List<DiffEntry> diffs = git.diff().setNewTree(newTreeIterator).setOldTree(oldTreeIterator).call();
+		return diffs;
 	}
 
 	private void misDiffMerge(List<CodeSnapShot> codeChunkList) {

@@ -14,7 +14,6 @@ import commit_task_visualization.code_change_extraction.model.SubCodeChunk;
 public class DuplicatedFlowFilter {
 
 	private boolean isMethodFlow = false;
-	private MethodPart causedByMethod = null;
 
 	public DuplicatedFlowFilter() {
 
@@ -38,6 +37,7 @@ public class DuplicatedFlowFilter {
 		}
 		methodPartSet.removeAll(duplicatedMethodList);
 		codeChunk.setMethodPartSet(methodPartSet);
+		System.out.println();
 		testMethodPartSet.removeAll(duplicatedMethodList);
 		codeChunk.setTestMethodPartSet(testMethodPartSet);
 
@@ -59,7 +59,7 @@ public class DuplicatedFlowFilter {
 			String methodID = methodPart.getID();
 			for (MethodPart clonedMethodPart : clonedMethodPartSet) {
 				boolean validateValue = false;
-				validateValue = searchID(methodID, clonedMethodPart);
+				validateValue = searchID(methodID, clonedMethodPart, null);
 				if (validateValue == true)
 					return validateValue;
 			}
@@ -69,7 +69,7 @@ public class DuplicatedFlowFilter {
 			String attributeID = attributePart.getID();
 			for (MethodPart clonedMethodPart : clonedMethodPartSet) {
 				boolean validateValue = false;
-				validateValue = searchID(attributeID, clonedMethodPart);
+				validateValue = searchID(attributeID, clonedMethodPart, null);
 				if (validateValue == true)
 					return validateValue;
 			}
@@ -77,7 +77,7 @@ public class DuplicatedFlowFilter {
 		return false;
 	}
 
-	private boolean searchID(String codePartID, Object clonedCodePart) {
+	private boolean searchID(String codePartID, Object clonedCodePart, MethodPart causedByMethod) {
 		boolean validationValue = false;
 		MethodPart clonedMethodPart = null;
 		AttributePart clonedAttributePart = null;
@@ -107,14 +107,14 @@ public class DuplicatedFlowFilter {
 								if(causedByMethod != null && causedByMethod.equals(connectedMethod))
 									return true;
 								causedByMethod = clonedMethodPart;
-								validationValue = searchID(codePartID, connectedMethod);
+								validationValue = searchID(codePartID, connectedMethod, causedByMethod);
 								if(validationValue == true)
 									return validationValue;
 							}
 						}
 						List<AttributePart> connectedAttributeParts = stmtPart.getConnectedAttributes();
 						for (AttributePart connectedAttributePart : connectedAttributeParts) {
-							validationValue = searchID(codePartID, connectedAttributePart);
+							validationValue = searchID(codePartID, connectedAttributePart, causedByMethod);
 							if(validationValue == true)
 								return validationValue;
 						}

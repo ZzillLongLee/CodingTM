@@ -21,7 +21,6 @@ public class FlowConnector {
 	private List<MethodPart> methodPartSet;
 	private List<ClassPart> interfaceClassSet;
 	private List<ClassPart> abstractClassSet;
-	private MethodPart causedByMethod;
 
 	public FlowConnector(List<MethodPart> methodPartSet, List<ClassPart> interfaceClassSet,
 			List<ClassPart> abstractClassSet) {
@@ -31,7 +30,7 @@ public class FlowConnector {
 	}
 
 	public void connectFlow(StatementPart stmtPart, List<AttributePart> attributePartSet,
-			List<MethodPart> clonedMethodPartSet, int type) {
+			List<MethodPart> clonedMethodPartSet, int type, MethodPart causedByMethod) {
 
 		List<ClassInstanceCreationPart> instanceCreationPartList = stmtPart.getClassInstanceCrePart();
 		List<FieldAccessPart> fieldAccessPartList = stmtPart.getFieldAccessPart();
@@ -45,26 +44,20 @@ public class FlowConnector {
 				if (methodPart != null) {
 					checkUsedPart(methodPartSet, type, methodPart);
 
-					MethodDeclaration stmtMethod = stmtPart.getMethodDecl();
-					if (stmtMethod.equals(methodPart.getMethodDecl())) {
+					if (causedByMethod != null && causedByMethod.equals(methodPart.getMethodDecl())) {
 						break;
 					}
-					if (causedByMethod != null
-							&& causedByMethod.getMethodDecl().equals(stmtMethod)) {
-						break;
-					} else {
-						causedByMethod = methodPart;
-						stmtPart.setConnectedMethod(methodPart);
-						MethodPart connectedMethod = stmtPart.getConnectedSingleMethod(methodPart);
+					causedByMethod = methodPart;
+					stmtPart.setConnectedMethod(methodPart);
+					MethodPart connectedMethod = stmtPart.getConnectedSingleMethod(methodPart);
 
-						List<StatementPart> statements = connectedMethod.getStatements();
-						List<MethodPart> connectedClonedMethodPartSet = new ArrayList<MethodPart>(clonedMethodPartSet);
-						if (statements != null) {
-							for (StatementPart connectedMethodStmtPart : statements) {
-								// connect method at this part. It's because avoiding infinite loop.
-								connectFlow(connectedMethodStmtPart, attributePartSet, connectedClonedMethodPartSet,
-										type);
-							}
+					List<StatementPart> statements = connectedMethod.getStatements();
+					List<MethodPart> connectedClonedMethodPartSet = new ArrayList<MethodPart>(clonedMethodPartSet);
+					if (statements != null) {
+						for (StatementPart connectedMethodStmtPart : statements) {
+							// connect method at this part. It's because avoiding infinite loop.
+							connectFlow(connectedMethodStmtPart, attributePartSet, connectedClonedMethodPartSet, type,
+									causedByMethod);
 						}
 					}
 				}
@@ -91,7 +84,7 @@ public class FlowConnector {
 						if (stmtMethod.equals(connectedMethod.getMethodDecl()))
 							break;
 						else
-							connectFlow(connectedMethodStmtPart, attributePartSet, connectedClonedMethodPartSet, type);
+							connectFlow(connectedMethodStmtPart, attributePartSet, connectedClonedMethodPartSet, type, null);
 					}
 				}
 			}

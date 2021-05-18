@@ -36,6 +36,7 @@ public class MergeProcessor {
 			if (taskElement.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
 				if (!cloneRemoveSet.contains(taskElementHash.getKey())) {
 					mergeTaskElement(taskElement, clonedTEHashMap);
+					System.out.println();
 //					for (String key : cloneRemoveSet) {
 //						clonedTEHashMap.remove(key);
 //					}

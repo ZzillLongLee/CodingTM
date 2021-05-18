@@ -98,9 +98,6 @@ class TaskVisualizerDragControl extends ControlAdapter {
 	 *      java.awt.event.MouseEvent)
 	 */
 	public void itemPressed(VisualItem item, MouseEvent e) {
-//		Point pos = e.getPoint();
-//		int x = pos.x;
-//		int y = pos.y;
 		if (!SwingUtilities.isLeftMouseButton(e))
 			return;
 		dragged = false;

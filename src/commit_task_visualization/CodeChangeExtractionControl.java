@@ -135,6 +135,8 @@ public class CodeChangeExtractionControl {
 		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
 		System.out.println("Link Size:" + taskElementRepo.getTaskElementHashMap().size());
 		List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
+		System.out.println("Cur Commit ID" + curCommitID);
+		System.out.println("Prev Commit ID" + prevCommitID);
 		return new CommitData(curCommitID, prevCommitID, taskList, taskElementHashmap);
 	}
 
