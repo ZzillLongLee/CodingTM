@@ -31,13 +31,13 @@ public class DuplicatedFlowFilter {
 			List<MethodPart> cloneMergedMethodPartSet = new ArrayList<MethodPart>(mergedMethodPartSet);
 			cloneMergedMethodPartSet.remove(methodPart);
 			boolean hasFlow = searchCodeElementInTheFlow(methodPart, cloneMergedMethodPartSet);
+			System.out.println();
 			if (hasFlow == true && !duplicatedMethodList.contains(methodPart)) {
 				duplicatedMethodList.add(methodPart);
 			}
 		}
 		methodPartSet.removeAll(duplicatedMethodList);
 		codeChunk.setMethodPartSet(methodPartSet);
-		System.out.println();
 		testMethodPartSet.removeAll(duplicatedMethodList);
 		codeChunk.setTestMethodPartSet(testMethodPartSet);
 
@@ -104,6 +104,7 @@ public class DuplicatedFlowFilter {
 							if (connectedMethod.getID().equals(codePartID))
 								return true;
 							else {
+								// This part must be modified later, cuz it makes bugs								
 								if(causedByMethod != null && causedByMethod.equals(connectedMethod))
 									return true;
 								causedByMethod = clonedMethodPart;

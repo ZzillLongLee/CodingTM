@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.LabeledStatement;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ReturnStatement;
@@ -216,6 +217,7 @@ public class CodeChunkPreprocessor {
 					if (className.contains(Constants.KEY_WORD_TEST)) {
 						testClassPartSet.add(classPart);
 						testAttributePartSet.addAll(classFieldObjects);
+						classMethodObjects = filterNoneTestMethodInTest(classMethodObjects, methodPartSet);
 						testMethodPartSet.addAll(classMethodObjects);
 					} else {
 						classPartSet.add(classPart);
@@ -230,6 +232,36 @@ public class CodeChunkPreprocessor {
 				.setTestClassPartSet(testClassPartSet).setAttributePartSet(attributePartSet)
 				.setTestAttributePartSet(testAttributePartSet).setMethodPartSet(methodPartSet)
 				.setTestMethodPartSet(testMethodPartSet).build();
+	}
+
+	private static List filterNoneTestMethodInTest(List classMethodObjects, List<MethodPart> methodPartSet) {
+		List classMethodObjectsClone = new ArrayList<Object>(classMethodObjects);
+		for (Object classMethodObject : classMethodObjects) {
+			if (classMethodObject instanceof MethodPart) {
+				boolean hasTestAnotation = false;
+				boolean isPublicType = false;
+				MethodPart methodPart = (MethodPart) classMethodObject;
+				String methodName = methodPart.getMethodName();
+				List modifiers = methodPart.getMethodDecl().modifiers();
+				for (Object object : modifiers) {
+					if (object instanceof MarkerAnnotation) {
+						MarkerAnnotation ma = (MarkerAnnotation) object;
+						if (ma.toString().equals(Constants.TEST_ANOTATION))
+							hasTestAnotation = true;
+
+					}
+					if (object instanceof Modifier) {
+						Modifier modifier = (Modifier) object;
+						isPublicType = modifier.isPublic();
+					}
+				}
+				if (hasTestAnotation == false && isPublicType == false) {
+					methodPartSet.add(methodPart);
+					classMethodObjectsClone.remove(methodPart);
+				}
+			}
+		}
+		return classMethodObjectsClone;
 	}
 
 	private static List getClassElements(String className, List elementObjects) {

@@ -142,7 +142,7 @@ public class TaskVisualizer extends JPanel {
 		Graph g = new Graph();
 
 		initTable(g, taskElementHashmap);
-
+		System.out.println("# of Links: " + g.getEdgeCount());
 		// add visual data groups
 		VisualGraph vg = m_vis.addGraph(GRAPH, g);
 		m_vis.setInteractive(EDGES, null, false);
@@ -164,7 +164,7 @@ public class TaskVisualizer extends JPanel {
 		for (int i = 0; i < taskList.size(); ++i) {
 			AggregateItem aitem = (AggregateItem) at.addItem();
 			aitem.setInt("id", i);
-			aitem.setString("label", "Task_"+i);
+			aitem.setString("label", "Task_" + i);
 			List<TaskElement> task = taskList.get(i);
 			boolean isTestCase = false;
 			for (TaskElement taskElement : task) {

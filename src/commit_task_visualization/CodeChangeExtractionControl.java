@@ -125,6 +125,8 @@ public class CodeChangeExtractionControl {
 
 		HashMap<String, TaskElement> taskElementHashmap = taskElementRepo.getTaskElementHashMap();
 		MergeProcessor mp = new MergeProcessor(prevCommitID, curCommitID);
+		System.out.println("Cur Commit ID" + curCommitID);
+		System.out.println("Prev Commit ID" + prevCommitID);
 		try {
 			mp.mergeTwoVersion(taskElementHashmap);
 		} catch (CloneNotSupportedException e) {
@@ -133,10 +135,7 @@ public class CodeChangeExtractionControl {
 		}
 		mp.updateCausalRel(taskElementHashmap, taskElementRepo);
 		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
-		System.out.println("Link Size:" + taskElementRepo.getTaskElementHashMap().size());
 		List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
-		System.out.println("Cur Commit ID" + curCommitID);
-		System.out.println("Prev Commit ID" + prevCommitID);
 		return new CommitData(curCommitID, prevCommitID, taskList, taskElementHashmap);
 	}
 

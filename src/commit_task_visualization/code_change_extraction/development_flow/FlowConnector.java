@@ -21,6 +21,7 @@ public class FlowConnector {
 	private List<MethodPart> methodPartSet;
 	private List<ClassPart> interfaceClassSet;
 	private List<ClassPart> abstractClassSet;
+	private ArrayList<MethodPart> flowChecker;
 
 	public FlowConnector(List<MethodPart> methodPartSet, List<ClassPart> interfaceClassSet,
 			List<ClassPart> abstractClassSet) {
@@ -31,7 +32,6 @@ public class FlowConnector {
 
 	public void connectFlow(StatementPart stmtPart, List<AttributePart> attributePartSet,
 			List<MethodPart> clonedMethodPartSet, int type, MethodPart causedByMethod) {
-
 		List<ClassInstanceCreationPart> instanceCreationPartList = stmtPart.getClassInstanceCrePart();
 		List<FieldAccessPart> fieldAccessPartList = stmtPart.getFieldAccessPart();
 		List<MethodInvocationPart> methodInvocationPartList = stmtPart.getMethodInvoPartList();
@@ -41,13 +41,26 @@ public class FlowConnector {
 		if (methodInvocationPartList != null && methodInvocationPartList.size() != 0) {
 			for (MethodInvocationPart methodInvocationPart : methodInvocationPartList) {
 				MethodPart methodPart = getMethodFromMethodInvocation(clonedMethodPartSet, methodInvocationPart);
+				//	We need to be cautious this part because it might make a bugs.	
 				if (methodPart != null) {
 					checkUsedPart(methodPartSet, type, methodPart);
-
-					if (causedByMethod != null && causedByMethod.equals(methodPart.getMethodDecl())) {
-						break;
+					if (causedByMethod != null) {
+						String causedMethodID = causedByMethod.getID();
+						String methodID = methodPart.getID();
+						if (causedByMethod != null && causedMethodID.equals(methodID)) {
+							break;
+						}
 					}
-					causedByMethod = methodPart;
+					//This if statement condition prevent call method itself and connect each other.
+					//	We need to be cautious this part because it might make a bugs.	
+					if(causedByMethod == null && stmtPart.getMethodDecl().equals(methodPart.getMethodDecl()))
+						break;
+					if (flowChecker.contains(methodPart)) {
+						break;
+					} else {
+						causedByMethod = methodPart;
+						flowChecker.add(methodPart);
+					}
 					stmtPart.setConnectedMethod(methodPart);
 					MethodPart connectedMethod = stmtPart.getConnectedSingleMethod(methodPart);
 
@@ -84,7 +97,8 @@ public class FlowConnector {
 						if (stmtMethod.equals(connectedMethod.getMethodDecl()))
 							break;
 						else
-							connectFlow(connectedMethodStmtPart, attributePartSet, connectedClonedMethodPartSet, type, null);
+							connectFlow(connectedMethodStmtPart, attributePartSet, connectedClonedMethodPartSet, type,
+									null);
 					}
 				}
 			}
@@ -247,6 +261,10 @@ public class FlowConnector {
 			}
 		}
 		return null;
+	}
+
+	public void setFlowCheckList(ArrayList<MethodPart> flowChecker) {
+		this.flowChecker = flowChecker;
 	}
 
 }

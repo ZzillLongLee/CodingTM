@@ -12,7 +12,7 @@ public class Constants {
 	public final static String START_BLOCK = "{";
 	public final static String LAST_BLOCK = "}";
 	public final static String KEY_WORD_TEST = "Test";
-	
+	public static final String TEST_ANOTATION = "@Test";
 	public static final String JAVA_FILE_EXTENSION = ".java";
 	
 	
