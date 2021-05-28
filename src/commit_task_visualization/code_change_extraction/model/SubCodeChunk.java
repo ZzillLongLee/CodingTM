@@ -11,7 +11,6 @@ public class SubCodeChunk implements Serializable{
 	private List<ClassPart> testClassPartSet;
 	private List<AttributePart> attributePartSet;
 	private List<MethodPart> methodPartSet;
-	private List<AttributePart> testAttributePartSet;
 	private List<MethodPart> testMethodPartSet;
 
 	public SubCodeChunk(SubCodeChunkBuilder codeChunkBuilder) {
@@ -19,7 +18,6 @@ public class SubCodeChunk implements Serializable{
 		this.testClassPartSet = codeChunkBuilder.testClassPartSet;
 		this.attributePartSet = codeChunkBuilder.attributePartSet;
 		this.methodPartSet = codeChunkBuilder.methodPartSet;
-		this.testAttributePartSet = codeChunkBuilder.testAttributePartSet;
 		this.testMethodPartSet = codeChunkBuilder.testMethodPartSet;
 	}
 
@@ -39,10 +37,6 @@ public class SubCodeChunk implements Serializable{
 		return methodPartSet;
 	}
 
-	public List<AttributePart> getTestAttributePartSet() {
-		return testAttributePartSet;
-	}
-
 	public List<MethodPart> getTestMethodPartSet() {
 		return testMethodPartSet;
 	}
@@ -59,10 +53,6 @@ public class SubCodeChunk implements Serializable{
 		this.attributePartSet = attributePartSet;
 	}
 	
-	public void setTestAttributePartSet(List<AttributePart> testAttributePartSet) {
-		this.testAttributePartSet = testAttributePartSet;
-	}
-
 	public void assignConnectedElementsToClassPart() {
 		if (testClassPartSet.size() != 0) {
 			for (ClassPart testClassPart : testClassPartSet) {
@@ -74,7 +64,7 @@ public class SubCodeChunk implements Serializable{
 						testClassPart.setMethodPart(testMethodPart);
 					}
 				}
-				for (AttributePart attributePart : testAttributePartSet) {
+				for (AttributePart attributePart : attributePartSet) {
 					String parentClssName = attributePart.getClassName();
 					if (parentClssName.equals(testClassName)) {
 						testClassPart.setAttributePart(attributePart);
@@ -124,11 +114,6 @@ public class SubCodeChunk implements Serializable{
 
 		public SubCodeChunkBuilder setAttributePartSet(List<AttributePart> attributePartSet) {
 			this.attributePartSet = attributePartSet;
-			return this;
-		}
-
-		public SubCodeChunkBuilder setTestAttributePartSet(List<AttributePart> testAttributePartSet) {
-			this.testAttributePartSet = testAttributePartSet;
 			return this;
 		}
 

@@ -25,11 +25,19 @@ public class TaskVisualizerUtil {
 		String packagePath = splitedID[1];
 		String className = splitedID[2];
 		String identifier = splitedID[3];
-		return className+VisualizationConstants.SPLITMARK+identifier;
+		return className + VisualizationConstants.SPLITMARK + identifier;
 	}
-	
+
 	public static String className(String taskElementID) {
 		String[] splitedID = taskElementID.split(VisualizationConstants.SPLITMARK);
 		return splitedID[2];
+	}
+
+	public static String getIDwithoutCommitID(String taskElementID) {
+		String[] splitedID = taskElementID.split(Constants.SEPERATOR);
+		String packagePath = splitedID[1];
+		String className = splitedID[2];
+		String identifier = splitedID[3];
+		return packagePath + VisualizationConstants.SPLITMARK + className + VisualizationConstants.SPLITMARK + identifier;
 	}
 }

@@ -53,8 +53,9 @@ public class StatementTableModel extends AbstractTableModel {
 			if (obj instanceof TaskStatement) {
 				TaskStatement ts = (TaskStatement) obj;
 				String pastCode = ts.getPastCode();
+				String changedType = ts.getChangedType();
 				if (pastCode != null)
-					temp = pastCode;
+					temp = "("+changedType+")" + pastCode;
 				else
 					temp = "";
 			}
@@ -63,8 +64,9 @@ public class StatementTableModel extends AbstractTableModel {
 			if (obj instanceof TaskStatement) {
 				TaskStatement ts = (TaskStatement) obj;
 				String currentCode = ts.getCurrentCode();
+				String changedType = ts.getChangedType();
 				if (currentCode != null)
-					temp = currentCode;
+					temp = "("+changedType+")" + currentCode;
 				else
 					temp = "";
 			}

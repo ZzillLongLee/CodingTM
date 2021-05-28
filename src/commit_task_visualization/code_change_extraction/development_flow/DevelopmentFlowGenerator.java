@@ -31,7 +31,6 @@ public class DevelopmentFlowGenerator {
 		this.attributePartSet = codeChunk.getAttributePartSet();
 		this.methodPartSet = codeChunk.getMethodPartSet();
 		this.testClassPartSet = codeChunk.getTestClassPartSet();
-		this.testAttributePartSet = codeChunk.getTestAttributePartSet();
 		this.testMethodPartSet = codeChunk.getTestMethodPartSet();
 		generateDevelopmentFlow();
 	}
@@ -78,7 +77,6 @@ public class DevelopmentFlowGenerator {
 							for (StatementPart stmtPart : statements) {
 								checkUsedPart(testMethodPartSet, Constants.TEST_METHOD_TRAVERSE, testMethodPart);
 								// this part might need to be added to connect method in test class.
-								checkIncludeTestMethod(stmtPart, clonedTestMethodPartSet);
 								flowConnector.setFlowCheckList(new ArrayList<MethodPart>());
 								flowConnector.connectFlow(stmtPart, attributePartSet, methodPartSet,
 										Constants.TEST_METHOD_TRAVERSE, null);

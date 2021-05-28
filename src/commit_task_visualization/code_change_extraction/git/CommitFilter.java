@@ -43,20 +43,26 @@ public class CommitFilter {
 			if (commit.getId().toString().contains(keyWord)) {
 				System.out.println("Commit MSG:" + commitMsg);
 				RevCommit[] prevCommit = commit.getParents();
-				diffs = generateDiff(prevCommit[0], commit);
-				HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-				codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+				if(prevCommit != null) {
+					diffs = generateDiff(prevCommit[0], commit);
+					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
+					codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+				}
 			} else if (commitMsg.contains(keyWord)) {
 				System.out.println("Commit MSG:" + commitMsg);
 				RevCommit[] prevCommit = commit.getParents();
-				diffs = generateDiff(prevCommit[0], commit);
-				HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-				codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+				if(prevCommit != null) {
+					diffs = generateDiff(prevCommit[0], commit);
+					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
+					codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+				}
 			} else if (keyWord.equals(Constants.KEY_WORD_EMPTY)) {
 				RevCommit[] prevCommit = commit.getParents();
-				diffs = generateDiff(prevCommit[0], commit);
-				HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-				codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+				if(prevCommit != null) {
+					diffs = generateDiff(prevCommit[0], commit);
+					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
+					codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+				}
 			}
 		}
 		misDiffMerge(codeChunkList);

@@ -196,7 +196,6 @@ public class CodeChunkPreprocessor {
 		List<MethodPart> methodPartSet = new ArrayList<MethodPart>();
 
 		List<ClassPart> testClassPartSet = new ArrayList<ClassPart>();
-		List<AttributePart> testAttributePartSet = new ArrayList<AttributePart>();
 		List<MethodPart> testMethodPartSet = new ArrayList<MethodPart>();
 
 		for (ChangedFilePart changedFilePart : changedFileList) {
@@ -216,7 +215,7 @@ public class CodeChunkPreprocessor {
 					List classMethodObjects = getClassElements(className, methodObjects);
 					if (className.contains(Constants.KEY_WORD_TEST)) {
 						testClassPartSet.add(classPart);
-						testAttributePartSet.addAll(classFieldObjects);
+						attributePartSet.addAll(classFieldObjects);
 						classMethodObjects = filterNoneTestMethodInTest(classMethodObjects, methodPartSet);
 						testMethodPartSet.addAll(classMethodObjects);
 					} else {
@@ -230,8 +229,7 @@ public class CodeChunkPreprocessor {
 
 		return new SubCodeChunk.SubCodeChunkBuilder().setClassPartSet(classPartSet)
 				.setTestClassPartSet(testClassPartSet).setAttributePartSet(attributePartSet)
-				.setTestAttributePartSet(testAttributePartSet).setMethodPartSet(methodPartSet)
-				.setTestMethodPartSet(testMethodPartSet).build();
+				.setMethodPartSet(methodPartSet).setTestMethodPartSet(testMethodPartSet).build();
 	}
 
 	private static List filterNoneTestMethodInTest(List classMethodObjects, List<MethodPart> methodPartSet) {
@@ -239,7 +237,6 @@ public class CodeChunkPreprocessor {
 		for (Object classMethodObject : classMethodObjects) {
 			if (classMethodObject instanceof MethodPart) {
 				boolean hasTestAnotation = false;
-				boolean isPublicType = false;
 				MethodPart methodPart = (MethodPart) classMethodObject;
 				String methodName = methodPart.getMethodName();
 				List modifiers = methodPart.getMethodDecl().modifiers();
@@ -250,12 +247,8 @@ public class CodeChunkPreprocessor {
 							hasTestAnotation = true;
 
 					}
-					if (object instanceof Modifier) {
-						Modifier modifier = (Modifier) object;
-						isPublicType = modifier.isPublic();
-					}
 				}
-				if (hasTestAnotation == false && isPublicType == false) {
+				if (hasTestAnotation == false) {
 					methodPartSet.add(methodPart);
 					classMethodObjectsClone.remove(methodPart);
 				}
