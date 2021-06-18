@@ -42,10 +42,10 @@ public class ChangeStateIdentifier {
 		List<MethodPart> prevVersionMethodObjects = changedFilePart.getMethodObjects(Constants.PREV_VERSION);
 		List<MethodPart> curVersionMethodObjects = changedFilePart.getMethodObjects(Constants.CUR_VERSION);
 
-		if (changedFilePart.getChangeType().equals(InsideClassChangeType.ADD))
-			setStatusType(changedFilePart, InsideClassChangeType.ADD);
-		else if (changedFilePart.getChangeType().equals(InsideClassChangeType.DELETE))
-			setStatusType(changedFilePart, InsideClassChangeType.DELETE);
+		if (changedFilePart.getChangeType().equals(InsideClassChangeType.Added))
+			setStatusType(changedFilePart, InsideClassChangeType.Added);
+		else if (changedFilePart.getChangeType().equals(InsideClassChangeType.Deleted))
+			setStatusType(changedFilePart, InsideClassChangeType.Deleted);
 		else {
 
 			setClassIdentifierChangeState(prevVersionClassParts, curVersionClassParts);
@@ -77,11 +77,11 @@ public class ChangeStateIdentifier {
 		List<AttributePart> fieldObjects = null;
 		List<MethodPart> methodObjects = null;
 		List<ClassPart> classParts = null;
-		if (changedType == InsideClassChangeType.ADD) {
+		if (changedType == InsideClassChangeType.Added) {
 			classParts = changedFilePart.getClassParts(Constants.CUR_VERSION);
 			fieldObjects = changedFilePart.getFieldObjects(Constants.CUR_VERSION);
 			methodObjects = changedFilePart.getMethodObjects(Constants.CUR_VERSION);
-		} else if (changedType == InsideClassChangeType.DELETE) {
+		} else if (changedType == InsideClassChangeType.Deleted) {
 			classParts = changedFilePart.getClassParts(Constants.PREV_VERSION);
 			fieldObjects = changedFilePart.getFieldObjects(Constants.PREV_VERSION);
 			methodObjects = changedFilePart.getMethodObjects(Constants.PREV_VERSION);
@@ -125,13 +125,13 @@ public class ChangeStateIdentifier {
 						classPart2.setClassIdentifierState(InsideClassChangeType.NONE);
 						classPart1.setClassIdentifierState(InsideClassChangeType.NONE);
 					}else {
-						classPart2.setClassIdentifierState(InsideClassChangeType.MODIFIED);
-						classPart1.setClassIdentifierState(InsideClassChangeType.MODIFIED);
+						classPart2.setClassIdentifierState(InsideClassChangeType.Modified);
+						classPart1.setClassIdentifierState(InsideClassChangeType.Modified);
 					}
 					if (curClassIdentifier != null && prevClassIdentifier != null) {
 						if (!curClassIdentifier.equals(prevClassIdentifier)) {
-							classPart2.setClassIdentifierState(InsideClassChangeType.MODIFIED);
-							classPart1.setClassIdentifierState(InsideClassChangeType.MODIFIED);
+							classPart2.setClassIdentifierState(InsideClassChangeType.Modified);
+							classPart1.setClassIdentifierState(InsideClassChangeType.Modified);
 						}
 					}
 				}
@@ -148,12 +148,12 @@ public class ChangeStateIdentifier {
 				String similairAttrClassName = value.getClassName();
 				if(className2.equals(similairAttrClassName)) {
 					attributePart2.setMatchedAttribute(value.getAttributeAsString());
-					attributePart2.setChangedType(InsideClassChangeType.MODIFIED);
+					attributePart2.setChangedType(InsideClassChangeType.Modified);
 				}
 			} else if (versionType == Constants.CUR_VERSION) {
-				attributePart2.setChangedType(InsideClassChangeType.ADD);
+				attributePart2.setChangedType(InsideClassChangeType.Added);
 			} else if (versionType == Constants.PREV_VERSION) {
-				attributePart2.setChangedType(InsideClassChangeType.DELETE);
+				attributePart2.setChangedType(InsideClassChangeType.Deleted);
 			}
 		}
 	}
@@ -171,7 +171,7 @@ public class ChangeStateIdentifier {
 				isSameIdentifier = compareMethodIdentifier(methodPart1, methodPart2);
 				if (className2.equals(className1)&&isSameIdentifier == true) {
 					if (methodAsString2.equals(methodAsString1) == false) {
-						methodPart2.setChangedType(InsideClassChangeType.MODIFIED);
+						methodPart2.setChangedType(InsideClassChangeType.Modified);
 						// Matched ?ïòÎ©? previousÍ≤ÉÏù¥ ?Ñ§?†ï?ù¥ ?ïà?êò?äîÍ±? Í∞ôÏùå Í∑∏Îü¨ÎØ?Î°? ?ó¨Í∏∞ÏÑú ?àò?ñâ?ï¥ Î≥¥Ïù¥?äîÍ≤?
 						// ?†Å?†à?ï¥ Î≥¥ÏûÑ
 						List<StatementPart> methodObj2Statements = methodPart2.getStatements();
@@ -188,14 +188,14 @@ public class ChangeStateIdentifier {
 			if (isSame == false && isSameIdentifier == false) {
 				if (methodPart2.getChangedType() != InsideClassChangeType.NONE
 						&& versionType == Constants.CUR_VERSION) {
-					methodPart2.setChangedType(InsideClassChangeType.ADD);
+					methodPart2.setChangedType(InsideClassChangeType.Added);
 					List<StatementPart> methodPart2Stmts = methodPart2.getStatements();
-					setAddedOrDeletedStmtState(methodPart2Stmts, InsideClassChangeType.ADD);
+					setAddedOrDeletedStmtState(methodPart2Stmts, InsideClassChangeType.Added);
 				} else if (methodPart2.getChangedType() != InsideClassChangeType.NONE
 						&& versionType == Constants.PREV_VERSION) {
-					methodPart2.setChangedType(InsideClassChangeType.DELETE);
+					methodPart2.setChangedType(InsideClassChangeType.Deleted);
 					List<StatementPart> methodPart2Stmts = methodPart2.getStatements();
-					setAddedOrDeletedStmtState(methodPart2Stmts, InsideClassChangeType.DELETE);
+					setAddedOrDeletedStmtState(methodPart2Stmts, InsideClassChangeType.Deleted);
 				}
 			}
 		}
@@ -266,16 +266,14 @@ public class ChangeStateIdentifier {
 							minValue = distanceValue;
 						idx++;
 					}
-					if (0.0 < minValue && minValue < Constants.MODIFIED_STATUS_THRESHOLD_VALUE) {
-						stmtObject2.setChangedType(InsideClassChangeType.MODIFIED);
+					if (minValue > Constants.MODIFIED_STATUS_THRESHOLD_VALUE) {
+						stmtObject2.setChangedType(InsideClassChangeType.Modified);
 						StatementPart bestMatchVar = similarStatementSet.get(minValue);
 						setDetailContents(stmtObject2, bestMatchVar);
-						// Switch, if , while. for, for each?ì±?óê ???ïú ExpressionÍ≥? bodyÎ•? ÎπÑÍµê?ïòÍ∏? ?úÑ?ïú
-						// ?Ç¥?ö© ?ïÑ?öî
 					} else if (versionType == Constants.CUR_VERSION) {
-						stmtObject2.setChangedType(InsideClassChangeType.ADD);
+						stmtObject2.setChangedType(InsideClassChangeType.Added);
 					} else if (versionType == Constants.PREV_VERSION) {
-						stmtObject2.setChangedType(InsideClassChangeType.DELETE);
+						stmtObject2.setChangedType(InsideClassChangeType.Deleted);
 					}
 				}
 			}

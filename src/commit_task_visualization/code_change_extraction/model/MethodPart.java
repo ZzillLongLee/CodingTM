@@ -3,9 +3,11 @@ package commit_task_visualization.code_change_extraction.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
@@ -63,21 +65,29 @@ public class MethodPart implements Serializable {
 		} else
 			this.parametersAsString = "";
 
-		this.methodSignature = getMethodSignature(node);
+		getMethodSignature(node);
 		this.uniqueID = packageName + Constants.SEPERATOR + className.getFullyQualifiedName() + Constants.SEPERATOR
 				+ methodSignature;
 	}
 
-	private String getMethodSignature(MethodDeclaration node) {
+	private void getMethodSignature(MethodDeclaration node) {
 		if (methodSignature == null) {
 			Javadoc javaDoc = methodDecl.getJavadoc();
 			if (javaDoc != null) {
 				String javaDocString = javaDoc.toString();
 				methodAsString = methodAsString.replace(javaDocString, "");
 			}
+			String msSubString = methodAsString.substring(0, methodAsString.indexOf(Constants.KEY_WORD_NEWLINE));
 			this.methodSignature = methodAsString.substring(0, methodAsString.indexOf(Constants.KEY_WORD_NEWLINE));
+			List modifiers = node.modifiers();
+			for (Object object : modifiers) {
+				if (object instanceof MarkerAnnotation) {
+					MarkerAnnotation ma = (MarkerAnnotation) object;
+					msSubString = msSubString.replace(ma.toString() + " ", "");
+				}
+			}
+			this.methodSignature = msSubString;
 		}
-		return methodSignature;
 	}
 
 	public MethodDeclaration getMethodDecl() {

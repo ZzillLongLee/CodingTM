@@ -6,9 +6,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,35 +33,54 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
+import commit_task_visualization.single_task_visualization.TaskVisualizerUtil;
 import commit_task_visualization.single_task_visualization.VisualizationConstants;
 import prefuse.visual.VisualItem;
 
 public class TaskElementDialog {
 
+	private JPanel listPane;
 	private RSyntaxTextArea pastCodeView;
 	private RSyntaxTextArea curCodeView;
 	private JTable jtable;
 	private JTextField commitIDtextField;
+	private JTextField causedByTextField;
 	private JScrollPane scrollPane;
 	private Highlighter curCVhighlighter;
 	private Highlighter pastCVhighlighter;
 	private Color PAST_CODE_COLOR = Color.PINK;
 	private Color CURRENT_CODE_COLOR = Color.GREEN;
 	private JFrame teDialog;
-	private JPanel tablePanel;
+	private final String Deleted_ChangeType = "(Deleted)";
+	private final String MODIFIED_ChangeType = "(Modified)";
+	private final String ADDED_ChangeType = "(Added)";
 
 	public TaskElementDialog() {
 		teDialog = new JFrame();
 		teDialog.setPreferredSize(new Dimension(900, 600));
 		teDialog.setMinimumSize(new Dimension(650, 450));
-		teDialog.setLayout(new BorderLayout());
+		listPane = new JPanel();
+		listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
+		listPane.add(Box.createVerticalGlue());
 //		teDialog.setResizable(false);
 
-		JPanel commitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 1, 0));
+		// Why don't we aggregate all the UI elements in a single panel by using box
+		Box causedByPanelBox = Box.createHorizontalBox();
+		JLabel causedByLabel = new JLabel(VisualizationConstants.COMMIT_ID_LABEL);
+		causedByLabel.setPreferredSize(new Dimension(80, 25));
+		causedByLabel.setText("Caused By");
+		causedByLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		causedByPanelBox.add(causedByLabel);
+
+		causedByTextField = new JTextField();
+		causedByTextField.setPreferredSize(new Dimension(450, 25));
+		causedByTextField.setEditable(false);
+		causedByPanelBox.add(causedByTextField);
+
 		Box commitPanelBox = Box.createHorizontalBox();
 		JLabel commitLabel = new JLabel(VisualizationConstants.COMMIT_ID_LABEL);
-		commitLabel.setPreferredSize(new Dimension(80, 25));
-		commitLabel.setText("Commit ID");
+		commitLabel.setPreferredSize(new Dimension(100, 25));
+		commitLabel.setText("Task Element");
 		commitLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		commitPanelBox.add(commitLabel);
 
@@ -67,17 +88,17 @@ public class TaskElementDialog {
 		commitIDtextField.setPreferredSize(new Dimension(450, 25));
 		commitIDtextField.setEditable(false);
 		commitPanelBox.add(commitIDtextField);
-		commitPanel.add(commitPanelBox);
 
-		JPanel codePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
-		codePanel.setPreferredSize(new Dimension(450, 250));
+		listPane.add(causedByPanelBox);
+		listPane.add(commitPanelBox);
+
 		Box codePanelBox = Box.createHorizontalBox();
 
 		Box pastCodeBox = Box.createVerticalBox();
 		pastCodeBox.setAlignmentX(Box.TOP_ALIGNMENT);
 		JLabel pastCodeLabel = new JLabel(VisualizationConstants.COMMIT_ID_LABEL);
 		pastCodeLabel.setPreferredSize(new Dimension(60, 25));
-		pastCodeLabel.setText("Past Code");
+		pastCodeLabel.setText("Code of N-1th Version");
 		pastCodeLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		pastCodeBox.add(pastCodeLabel);
 
@@ -100,7 +121,7 @@ public class TaskElementDialog {
 		curCodeBox.setAlignmentX(Box.TOP_ALIGNMENT);
 		JLabel curCodeLabel = new JLabel(VisualizationConstants.COMMIT_ID_LABEL);
 		curCodeLabel.setPreferredSize(new Dimension(60, 25));
-		curCodeLabel.setText("Current Code");
+		curCodeLabel.setText("Code of Nth Version");
 		curCodeLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		curCodeBox.add(curCodeLabel);
 
@@ -116,30 +137,43 @@ public class TaskElementDialog {
 		curCodeBox.add(curCodeViewSP);
 
 		codePanelBox.add(curCodeBox);
-		codePanelBox.add(Box.createVerticalStrut(2));
-		codePanel.add(codePanelBox);
+//		codePanel.add(codePanelBox);
 
-		teDialog.add(commitPanel, BorderLayout.NORTH);
-		teDialog.add(codePanel, BorderLayout.CENTER);
+		listPane.add(codePanelBox);
 
-		tablePanel = new JPanel();
 		jtable = new JTable();
 		JTableHeader header = jtable.getTableHeader();
 		header.setReorderingAllowed(false);
 		header.setFont(new Font("Serif", Font.BOLD, 16));
 		scrollPane = new JScrollPane(jtable);
 		scrollPane.setPreferredSize(new Dimension(900, 300));
-		tablePanel.add(scrollPane);
+//		jtable.add(scrollPane);
 	}
 
-	public void drawDialog(TaskElement te, int x, int y){
+	public void drawDialog(TaskElement te, int x, int y) {
 		TaskElementUtil teUtil = new TaskElementUtil();
 		teUtil.setTaskElement(te);
-		String CommitID = teUtil.getElementID();
+		String taskElementLabel = TaskVisualizerUtil.getLabel(teUtil.getElementID());
+		String packagePath = TaskVisualizerUtil.getPackagePath(teUtil.getElementID());
+		String taskElementID = packagePath + VisualizationConstants.SPLITMARK + taskElementLabel;
 		String pastCode = teUtil.getPastCode();
 		String currentCode = teUtil.getCurrentCode();
 		List<TaskStatement> stmts = teUtil.getStatements();
-		commitIDtextField.setText(CommitID);
+		commitIDtextField.setText(taskElementID);
+		List<TaskElement> causedByList = te.getCausedBy();
+		StringBuilder causedByAsString = new StringBuilder();
+		int causByListSize = causedByList.size();
+		for (int i = 0; i < causByListSize; i++) {
+			teUtil.setTaskElement(causedByList.get(i));
+			packagePath = TaskVisualizerUtil.getPackagePath(teUtil.getElementID());
+			taskElementLabel = TaskVisualizerUtil.getLabel(teUtil.getElementID());
+			String causedByID = packagePath + VisualizationConstants.SPLITMARK + taskElementLabel;
+			if (i != causByListSize - 1)
+				causedByAsString.append(causedByID + "\n");
+			else
+				causedByAsString.append(causedByID);
+		}
+		causedByTextField.setText(causedByAsString.toString());
 
 		pastCodeView.setText(pastCode);
 		curCodeView.setText(currentCode);
@@ -147,7 +181,7 @@ public class TaskElementDialog {
 			jtable.removeAll();
 			StatementTableModel tableModel = new StatementTableModel(stmts);
 			jtable.setModel(tableModel);
-			teDialog.add(tablePanel, BorderLayout.SOUTH);
+			listPane.add(scrollPane);
 
 			jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -161,6 +195,7 @@ public class TaskElementDialog {
 					if (obj != null)
 						selectedValue = obj.toString();
 					if (selectedValue != null) {
+						selectedValue = removeChangeType(selectedValue);
 						if (pastCodeView.getText().contains(selectedValue)) {
 							String text = pastCodeView.getText();
 							int index = text.indexOf(selectedValue);
@@ -187,10 +222,24 @@ public class TaskElementDialog {
 						}
 					}
 				}
+
+				private String removeChangeType(String selectedValue) {
+					if (selectedValue.contains(ADDED_ChangeType)) {
+						return selectedValue.replace(ADDED_ChangeType, "");
+					}
+					if (selectedValue.contains(Deleted_ChangeType)) {
+						return selectedValue.replace(Deleted_ChangeType, "");
+					}
+					if (selectedValue.contains(MODIFIED_ChangeType)) {
+						return selectedValue.replace(MODIFIED_ChangeType, "");
+					}
+					return selectedValue;
+				}
 			});
 		} else {
-			teDialog.remove(tablePanel);
+			teDialog.remove(jtable);
 		}
+		teDialog.add(listPane);
 		teDialog.setLocation((int) x, (int) y);
 		teDialog.setVisible(true);
 		teDialog.revalidate();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import commit_task_visualization.code_change_extraction.model.AttributePart;
@@ -146,13 +147,23 @@ public class FlowConnector {
 		}
 	}
 
+	private MethodPart getMethodCheckingQualifiedName(List<MethodPart> clonedMethodPartSet, String qualifier,
+			String qualifiedNameIdentifier) {
+		for (MethodPart methodPart : clonedMethodPartSet) {
+			String className = methodPart.getClassName();
+		}
+		return null;
+	}
+
 	// need to connect hierarchy structure at this part.
 	private MethodPart getMethodFromMethodInvocation(List<MethodPart> clonedMethodPartSet,
 			MethodInvocationPart methodInvocationPart) {
 		String invokedMethodName = methodInvocationPart.getMethodName();
 		int invokedMethodSize = methodInvocationPart.getMethodArgu().size();
+		QualifiedName qualifiedName = methodInvocationPart.getQualifiedName();
 		List<MethodPart> abstractMethodList = hasAbstractMethod(clonedMethodPartSet);
 		for (MethodPart methodPart : clonedMethodPartSet) {
+			String className = methodPart.getClassName();
 			String methodName = methodPart.getMethodName();
 			int methodParamSize = methodPart.getParametersSize();
 			MethodPart abstractMethodPart = getAbstractMethod(abstractMethodList, methodName, methodParamSize);
@@ -163,6 +174,11 @@ public class FlowConnector {
 					return abstractMethodPart;
 				}
 			} else {
+				if(qualifiedName != null) {
+					String qualifier = qualifiedName.getQualifier().getFullyQualifiedName();
+					if(qualifier.equals(className) && invokedMethodName.equals(methodName) && invokedMethodSize == methodParamSize)
+						return methodPart;
+				}
 				if (invokedMethodName.equals(methodName) && invokedMethodSize == methodParamSize) {
 					return methodPart;
 				}

@@ -11,7 +11,7 @@ import commit_task_visualization.single_task_visualization.TaskVisualizer;
 
 public class StatementTableModel extends AbstractTableModel {
 
-	private static String[] columnNames = { "Statement pastCode", "Statement currentCode", "Connected Element" };
+	private static String[] columnNames = { "Deleted & Modified", "ADDED & Modified", "Caused To" };
 
 	protected Class[] columnClasses = new Class[] { String.class, String.class, String.class };
 

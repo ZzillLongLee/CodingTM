@@ -53,7 +53,7 @@ public class TaskElementRepo {
 		for (TaskElement taskElement : causalRelationship) {
 			if (taskElement != null) {
 				TaskElement te = getTaskElement(taskElement.taskElementID);
-				if (te == null && taskElement.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
+				if (te == null && taskElement.getChangedType().equals(InsideClassChangeType.Modified.name())) {
 					te = getMergedElement(taskElement);
 					if (!casualRe.contains(te))
 						casualRe.add(te);

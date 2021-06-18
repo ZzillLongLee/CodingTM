@@ -62,8 +62,8 @@ public class TreeTableView extends JScrollPane {
 		causedByttv.setPreferredSize(new Dimension(30, 120));
 		CausedByBox.add(causedByttv);
 
-		treeTableBox.add(causedToBox);
 		treeTableBox.add(CausedByBox);
+		treeTableBox.add(causedToBox);
 		treeTableBox.setVisible(true);
 		return treeTableBox;
 	}

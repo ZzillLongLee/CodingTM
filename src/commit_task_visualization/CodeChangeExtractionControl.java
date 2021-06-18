@@ -1,9 +1,12 @@
 package commit_task_visualization;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +45,7 @@ import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.code_change_extraction.util.TaskElementGenerater;
 import commit_task_visualization.multiple_task_visualization.MultipleCommitViewDialog;
 import commit_task_visualization.single_task_visualization.TaskVisualizer;
+import commit_task_visualization.single_task_visualization.TaskVisualizerUtil;
 import commit_task_visualization.single_task_visualization.model.CommitData;
 
 public class CodeChangeExtractionControl {
@@ -125,8 +129,6 @@ public class CodeChangeExtractionControl {
 
 		HashMap<String, TaskElement> taskElementHashmap = taskElementRepo.getTaskElementHashMap();
 		MergeProcessor mp = new MergeProcessor(prevCommitID, curCommitID);
-		System.out.println("Cur Commit ID" + curCommitID);
-		System.out.println("Prev Commit ID" + prevCommitID);
 		try {
 			mp.mergeTwoVersion(taskElementHashmap);
 		} catch (CloneNotSupportedException e) {
@@ -145,6 +147,32 @@ public class CodeChangeExtractionControl {
 		CommitData cd = generateTask(codeSnapShot);
 		List<List<TaskElement>> taskList = cd.getTaskList();
 		HashMap<String, TaskElement> taskElementHashmap = cd.getTaskElementHashmap();
+		try {
+			FileWriter myWriter = new FileWriter("C:\\Users\\Taeyoung Kim\\Desktop\\RQ1&2\\RQ2\\CodingTM\\"+curCommitID+".txt");
+			for (int i = 0; i < taskList.size(); i++) {
+				int taskNum = i+1;
+				myWriter.write("___________________________Task"+ taskNum + "________________________________\n");
+				List<TaskElement> task = taskList.get(i);
+				for (TaskElement taskElement : task) {
+					String taskIdWithoutCommitID = TaskVisualizerUtil.getIDwithoutCommitID(taskElement.getTaskElementID());
+					myWriter.write(taskIdWithoutCommitID+"\n");
+				}
+				myWriter.write("______________________________________________________________________________\n");
+			}
+			for (Entry<String, TaskElement> taskElementHash : taskElementHashmap.entrySet()) {
+				TaskElement te = taskElementHash.getValue();
+				List<TaskElement> causedTo = te.getCausedTo();
+				for (TaskElement causedToTE : causedTo) {
+					String causedToString = TaskVisualizerUtil.getIDwithoutCommitID(causedToTE.getTaskElementID());
+					String taskString = TaskVisualizerUtil.getIDwithoutCommitID(te.getTaskElementID());
+					myWriter.write(causedToString+" ----> "+taskString+"\n");
+				}
+			}
+			myWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		visualizeSingleCommit(parent, curCommitID, prevCommitID, taskElementHashmap, taskList);
 	}
 
@@ -190,12 +218,12 @@ public class CodeChangeExtractionControl {
 		tv = new TaskVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
 		JPanel panel = tv.showTask();
 		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
-		shell.setBounds(5, 5, 1000, 1100);
+		shell.setBounds(5, 5, 1300, 1400);
 		shell.setText("Task View |" + curCommitID);
 		System.setProperty("sun.awt.noerasebackground", "true");
 		Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.NO_BACKGROUND);
 		java.awt.Frame frame = SWT_AWT.new_Frame(composite);
-		composite.setBounds(5, 5, 1000, 1100);
+		composite.setBounds(5, 5, 1300, 1400);
 		frame.add(panel);
 		Display display = shell.getDisplay();
 		display.asyncExec(new Runnable() {

@@ -27,6 +27,12 @@ public class TaskVisualizerUtil {
 		String identifier = splitedID[3];
 		return className + VisualizationConstants.SPLITMARK + identifier;
 	}
+	
+	public static String getPackagePath(String taskElementID) {
+		String[] splitedID = taskElementID.split(Constants.SEPERATOR);
+		String packagePath = splitedID[1];
+		return packagePath;
+	}
 
 	public static String className(String taskElementID) {
 		String[] splitedID = taskElementID.split(VisualizationConstants.SPLITMARK);

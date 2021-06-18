@@ -36,6 +36,7 @@ public class CommitFilter {
 
 	public List<CodeSnapShot> filterCommits(Iterable<RevCommit> commits, String keyWord)
 			throws IOException, GitAPIException {
+		int size = 0;
 		List<CodeSnapShot> codeChunkList = new ArrayList<CodeSnapShot>();
 		for (RevCommit commit : commits) {
 			String commitMsg = commit.getFullMessage();
@@ -43,29 +44,31 @@ public class CommitFilter {
 			if (commit.getId().toString().contains(keyWord)) {
 				System.out.println("Commit MSG:" + commitMsg);
 				RevCommit[] prevCommit = commit.getParents();
-				if(prevCommit != null) {
+				if (prevCommit.length != 0) {
 					diffs = generateDiff(prevCommit[0], commit);
 					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+					if(diffContents.size() == 0)
+						size++;
+					codeChunkList.add(new CodeSnapShot(prevCommit[0], commit, diffContents));
 				}
 			} else if (commitMsg.contains(keyWord)) {
 				System.out.println("Commit MSG:" + commitMsg);
 				RevCommit[] prevCommit = commit.getParents();
-				if(prevCommit != null) {
+				if (prevCommit.length != 0) {
 					diffs = generateDiff(prevCommit[0], commit);
 					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+					codeChunkList.add(new CodeSnapShot(prevCommit[0], commit, diffContents));
 				}
 			} else if (keyWord.equals(Constants.KEY_WORD_EMPTY)) {
 				RevCommit[] prevCommit = commit.getParents();
-				if(prevCommit != null) {
+				if (prevCommit.length != 0) {
 					diffs = generateDiff(prevCommit[0], commit);
 					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot( prevCommit[0], commit, diffContents));
+					codeChunkList.add(new CodeSnapShot(prevCommit[0], commit, diffContents));
 				}
 			}
 		}
-		misDiffMerge(codeChunkList);
+		System.out.println("This size of commit has no java files"+size);
 		return codeChunkList;
 	}
 
@@ -74,16 +77,6 @@ public class CommitFilter {
 		AbstractTreeIterator oldTreeIterator = getCanonicalTreeParser(prevCommit);
 		List<DiffEntry> diffs = git.diff().setNewTree(newTreeIterator).setOldTree(oldTreeIterator).call();
 		return diffs;
-	}
-
-	private void misDiffMerge(List<CodeSnapShot> codeChunkList) {
-		for (CodeSnapShot codeSnapShot : codeChunkList) {
-			HashMap<DiffEntry, String> diffs = codeSnapShot.getDiffContents();
-			HashMap<DiffEntry, String> copyDiffs = new HashMap<DiffEntry, String>(diffs);
-			for ( Entry<DiffEntry, String> diff : diffs.entrySet()) {
-				String value = diff.getValue();
-			}
-		}
 	}
 
 	private boolean hasTest(List<DiffEntry> diffs) {

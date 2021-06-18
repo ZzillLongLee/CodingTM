@@ -15,6 +15,9 @@ public class Constants {
 	public static final String TEST_ANOTATION = "@Test";
 	public static final String JAVA_FILE_EXTENSION = ".java";
 	
+	public static final String PUBLIC = "public";
+	public static final String PRIVATE = "private";
+	public static final String PROTECTED = "protected";
 	
 	public final static int CUR_VERSION = 1;
 	public final static int PREV_VERSION = 2;

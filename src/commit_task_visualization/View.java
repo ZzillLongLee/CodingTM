@@ -77,7 +77,7 @@ public class View extends ViewPart {
 				SWT.CHECK | SWT.BORDER | SWT.MULTI | SWT.RESIZE | SWT.FULL_SELECTION | SWT.V_SCROLL);
 		Display device = Display.getCurrent();
 		table.setHeaderBackground(new Color(device, 220, 220, 220));
-		table.setBounds(10, 10, 400, 150);
+		table.setBounds(10, 10, 400, 140);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setLayoutData(new GridData(680, 250));
@@ -126,12 +126,8 @@ public class View extends ViewPart {
 				}
 			}
 		});
-		Label explainLabel = new Label(parent, SWT.WRAP);
-		explainLabel.setText("**If you want to see the mutiple commit view, you must check over 2 commit on the list.");
-		explainLabel.setForeground(new Color(new RGB(255, 0, 0)));
-
 		Button mutipleCommitViewButton = new Button(parent, SWT.PUSH | SWT.TOGGLE);
-		mutipleCommitViewButton.setText("Show Multiple Commit View");
+		mutipleCommitViewButton.setText("Show Development List View");
 		mutipleCommitViewButton.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -201,7 +197,7 @@ public class View extends ViewPart {
 		});
 
 		Button localGenBT = new Button(gitCloneComp, SWT.PUSH);
-		localGenBT.setText("Generate");
+		localGenBT.setText("Clone");
 		localGenBT.addListener(SWT.Selection, new Listener() {
 
 			@Override
@@ -260,7 +256,7 @@ public class View extends ViewPart {
 			}
 		});
 		Button commitListGenBT = new Button(comp, SWT.PUSH);
-		commitListGenBT.setText("Export Commit List");
+		commitListGenBT.setText("Search");
 		commitListGenBT.addListener(SWT.Selection, new Listener() {
 
 			@Override

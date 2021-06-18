@@ -55,18 +55,15 @@ import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
 
 public class TaskVisualizer extends JPanel {
-	public static final String[] legend = { "Feature Implementation", "Feature Improvement", "Etc." };
 	public static final String GRAPH = "graph";
 	public static final String NODES = "graph.nodes";
 	public static final String EDGES = "graph.edges";
 	public static final String ARROWS = "graph.arrows";
 	public static final String AGGR = "aggregates";
-	public static final int add_color = ColorLib.rgb(172, 251, 175);
-	public static final int delete_color = ColorLib.rgb(255, 69, 0);
-	public static final int modified_color = ColorLib.rgb(255, 255, 0);
-	public static final int FI_TASK_COLOR = ColorLib.rgb(50, 205, 50);
+	public static final int add_color = ColorLib.rgb(51, 251, 51);
+	public static final int delete_color = ColorLib.rgb(255, 51, 51);
+	public static final int modified_color = ColorLib.rgb(255, 255, 51);
 	public static final int FIpro_TASK_COLOR = ColorLib.rgb(246, 204, 255);
-	public static final int RF_TASK_COLOR = ColorLib.rgb(102, 204, 255);
 	public static String curCommitID = "";
 	public static String prevCommitID = "";
 	private Visualization m_vis;
@@ -97,17 +94,11 @@ public class TaskVisualizer extends JPanel {
 		drf.add("ingroup('aggregates')", polyR);
 		m_vis.setRendererFactory(drf);
 
-		// set up the visual operators
-		ColorAction nFill = new ColorAction(NODES, VisualItem.FILLCOLOR);
-		nFill.setDefaultColor(ColorLib.gray(255));
-		nFill.add("_hover", ColorLib.gray(200));
-
 		ColorAction nEdges = new ColorAction(EDGES, VisualItem.STROKECOLOR);
 		nEdges.setDefaultColor(ColorLib.gray(100));
 
 		// bundle the color actions
 		ActionList colors = new ActionList();
-		colors.add(nFill);
 		colors.add(nEdges);
 
 		// now create the main layout routine
@@ -142,7 +133,6 @@ public class TaskVisualizer extends JPanel {
 		Graph g = new Graph();
 
 		initTable(g, taskElementHashmap);
-		System.out.println("# of Links: " + g.getEdgeCount());
 		// add visual data groups
 		VisualGraph vg = m_vis.addGraph(GRAPH, g);
 		m_vis.setInteractive(EDGES, null, false);
@@ -166,44 +156,29 @@ public class TaskVisualizer extends JPanel {
 			aitem.setInt("id", i);
 			aitem.setString("label", "Task_" + i);
 			List<TaskElement> task = taskList.get(i);
-			boolean isTestCase = false;
 			for (TaskElement taskElement : task) {
-				boolean isTest = TaskElementUtil.isTest(taskElement);
 				VisualItem node = TaskVisualizerUtil.getNode(vg, taskElement);
 				aitem.addItem(node);
-				if (isTest == true)
-					isTestCase = isTest;
-			}
-			if (isTestCase == true && task.size() > 1) {
-				aitem.setFillColor(FI_TASK_COLOR);
-				aitem.setStrokeColor(ColorLib.rgb(213, 255, 128));
-			}
-			if (isTestCase == false && task.size() > 1) {
+				aitem.setStrokeColor(FIpro_TASK_COLOR);
 				aitem.setFillColor(FIpro_TASK_COLOR);
-				aitem.setStrokeColor(ColorLib.rgb(255, 20, 147));
-			}
-			if (task.size() == 1) {
-				aitem.setFillColor(RF_TASK_COLOR);
-				aitem.setStrokeColor(ColorLib.rgb(51, 85, 255));
 			}
 		}
-		addLegend();
 	}
 
 	private void setTaskElementColor(VisualItem item, Object obj) {
 		if (obj instanceof TaskElement) {
 			TaskElement te = (TaskElement) obj;
-			if (te.getChangedType().equals(InsideClassChangeType.ADD.name())) {
-				item.setStrokeColor(add_color);
+			if (te.getChangedType().equals(InsideClassChangeType.Added.name())) {
 				item.setFillColor(add_color);
+				item.setStrokeColor(add_color);
 			}
-			if (te.getChangedType().equals(InsideClassChangeType.DELETE.name())) {
-				item.setStrokeColor(delete_color);
+			if (te.getChangedType().equals(InsideClassChangeType.Deleted.name())) {
 				item.setFillColor(delete_color);
+				item.setStrokeColor(delete_color);
 			}
-			if (te.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
-				item.setStrokeColor(modified_color);
+			if (te.getChangedType().equals(InsideClassChangeType.Modified.name())) {
 				item.setFillColor(modified_color);
+				item.setStrokeColor(modified_color);
 			}
 		}
 	}
@@ -245,33 +220,6 @@ public class TaskVisualizer extends JPanel {
 				i++;
 			}
 		}
-	}
-
-	private void addLegend() {
-
-		Box legendBox = new Box(BoxLayout.X_AXIS);
-		JLabel legendTitlePanel = new JLabel("legend: ");
-		legendTitlePanel.setForeground(Color.black);
-		legendTitlePanel.setFont(new Font("Bold", Font.BOLD, 25));
-		legendBox.add(Box.createHorizontalStrut(16));
-		legendBox.add(legendTitlePanel);
-		JLabel FiLabel = new JLabel(legend[0] + ",");
-		FiLabel.setForeground(new Color(50, 205, 50));
-		FiLabel.setFont(new Font("Bold", Font.BOLD, 25));
-		legendBox.add(Box.createHorizontalStrut(16));
-		legendBox.add(FiLabel);
-		JLabel FIproLabel = new JLabel(legend[1] + ",");
-		FIproLabel.setForeground(new Color(246, 204, 255));
-		FIproLabel.setFont(new Font("Bold", Font.BOLD, 25));
-		legendBox.add(Box.createHorizontalStrut(24));
-		legendBox.add(FIproLabel);
-		JLabel RFLabel = new JLabel(legend[2]);
-		RFLabel.setForeground(new Color(102, 204, 255));
-		RFLabel.setFont(new Font("Bold", Font.BOLD, 25));
-		legendBox.add(Box.createHorizontalStrut(16));
-		legendBox.add(RFLabel);
-		add(legendBox, BorderLayout.NORTH);
-
 	}
 
 	public JPanel showTask() {

@@ -182,8 +182,8 @@ public class DevelopmentFlowGenerator {
 
 	private void collectParentClassSet() {
 		for (ClassPart classPart : classPartSet) {
-			if (classPart.getClassIdentifierState() == InsideClassChangeType.ADD
-					|| classPart.getClassIdentifierState() == InsideClassChangeType.MODIFIED) {
+			if (classPart.getClassIdentifierState() == InsideClassChangeType.Added
+					|| classPart.getClassIdentifierState() == InsideClassChangeType.Modified) {
 				if (classPart.isAbstract() && !abstractClassSet.contains(classPart))
 					abstractClassSet.add(classPart);
 				if (classPart.isInterface() && !abstractClassSet.contains(classPart))

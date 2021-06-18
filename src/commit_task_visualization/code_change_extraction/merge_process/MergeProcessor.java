@@ -33,7 +33,7 @@ public class MergeProcessor {
 		for (Entry<String, TaskElement> taskElementHash : taskElementHashmap.entrySet()) {
 			TaskElement taskElement = taskElementHash.getValue();
 			clonedTEHashMap.remove(taskElementHash.getKey());
-			if (taskElement.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
+			if (taskElement.getChangedType().equals(InsideClassChangeType.Modified.name())) {
 				if (!cloneRemoveSet.contains(taskElementHash.getKey())) {
 					mergeTaskElement(taskElement, clonedTEHashMap);
 					System.out.println();
@@ -68,7 +68,7 @@ public class MergeProcessor {
 			String matchedAttributeCode = targetTA.getMatchedAttribute();
 			for (Entry<String, TaskElement> cloneTeHash : cloneTeHashmap.entrySet()) {
 				TaskElement te = cloneTeHash.getValue();
-				if (te.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
+				if (te.getChangedType().equals(InsideClassChangeType.Modified.name())) {
 					if (te instanceof TaskAttribute) {
 						TaskAttribute ta = (TaskAttribute) te;
 						String code = TaskElementUtil.getCode(ta);
@@ -93,7 +93,7 @@ public class MergeProcessor {
 			String targetClassName = targetTM.getClassName();
 			for (Entry<String, TaskElement> cloneTeHash : cloneTeHashmap.entrySet()) {
 				TaskElement te = cloneTeHash.getValue();
-				if (te.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
+				if (te.getChangedType().equals(InsideClassChangeType.Modified.name())) {
 					if (te instanceof TaskMethod) {
 						TaskMethod tm = (TaskMethod) te;
 						String methodSig = tm.getMethodSignature();

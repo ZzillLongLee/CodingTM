@@ -96,11 +96,11 @@ public class ChangedFilePart {
 
 		public ChnagedFilePartBuilder(ChangeType changeType, String curFilePath, String prevFilePath) {
 			if (changeType.equals(changeType.ADD))
-				this.changeType = InsideClassChangeType.ADD;
+				this.changeType = InsideClassChangeType.Added;
 			else if (changeType.equals(changeType.DELETE))
-				this.changeType = InsideClassChangeType.DELETE;
+				this.changeType = InsideClassChangeType.Deleted;
 			else if (changeType.equals(changeType.MODIFY))
-				this.changeType = InsideClassChangeType.MODIFIED;
+				this.changeType = InsideClassChangeType.Modified;
 			this.curFilePath = curFilePath;
 			this.prevFilePath = prevFilePath;
 		}
