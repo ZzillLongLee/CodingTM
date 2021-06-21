@@ -4,7 +4,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import commit_task_visualization.single_task_visualization.model.CommitData;
+import commit_task_visualization.causal_relationship_visualization.model.CommitData;
 
 public class MultiTaskFileWriter {
 

@@ -1,4 +1,4 @@
-package commit_task_visualization.multiple_task_visualization;
+package commit_task_visualization.development_task_list_visualization;
 
 import java.util.List;
 
@@ -24,9 +24,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 
+import commit_task_visualization.CodeChangeExtractionControl;
+import commit_task_visualization.causal_relationship_visualization.dialog.TaskElementDialog;
+import commit_task_visualization.causal_relationship_visualization.model.CommitData;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
-import commit_task_visualization.single_task_visualization.dialog.TaskElementDialog;
-import commit_task_visualization.single_task_visualization.model.CommitData;
+import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 
 public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 
@@ -37,8 +39,11 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 	private ColumnGroupModel columnGroupModel;
 	private final int taskElementColumn = 2;
 	private TaskElementDialog teDialog;
+	private final String diffViewMenu = "show Task Element Diff View";
+	private final String crViewMenu = "show Causal Relationship View";
 
-	public CellMenuConfiguration(final NatTable natTable, List<CommitData> commitDataList, ColumnGroupModel columnGroupModel) {
+	public CellMenuConfiguration(final NatTable natTable, List<CommitData> commitDataList,
+			ColumnGroupModel columnGroupModel) {
 		this.commitDataList = commitDataList;
 		this.bodyMenu = createBodyMenu(natTable).build();
 		this.columnGroupModel = columnGroupModel;
@@ -60,32 +65,43 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 		natTable.setMenu(menu);
 
 		MenuItem mntmCopy = new MenuItem(menu, SWT.PUSH);
-		mntmCopy.setText("Show Task Element Property");
 		mntmCopy.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				if(columnPosition >2 && rowPosition > 1) {
-					ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnPosition-1);
+				if (columnPosition > 2 && rowPosition > 1) {
+					ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnPosition - 1);
 					if (columnGroup != null) {
 						// add event to show the single commit view
-						String commitID = columnGroup.getName();
-						CommitData commitData = getCommitData(commitID);
-						ILayerCell taskElementCell = natTable.getCellByPosition(taskElementColumn, rowPosition);
-						String taskElementID = (String)taskElementCell.getDataValue();
-						TaskElement taskElement = findTaskElement(commitData, taskElementID);
-						if(taskElement != null) {
-							teDialog = new TaskElementDialog();
-							ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
-							Rectangle bounds = cell.getBounds();
-							teDialog.drawDialog(taskElement, bounds.x, bounds.y);
-						}
+						showView(natTable, columnGroup);
 					}
-				}else {
+				} else {
 					MessageBox msgDialog = new MessageBox(natTable.getShell(),
 							SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
 					msgDialog.setMessage("Popup menu can be run at the changeType and task columns");
 					msgDialog.open();
+				}
+			}
+
+			private void showView(NatTable natTable, ColumnGroup columnGroup) {
+				String itemValue = bodyMenu.getItem(0).getText();
+				String commitID = columnGroup.getName();
+				CommitData commitData = getCommitData(commitID);
+				if (itemValue.equals(diffViewMenu)) {
+					ILayerCell taskElementCell = natTable.getCellByPosition(taskElementColumn, rowPosition);
+					String taskElementID = (String) taskElementCell.getDataValue();
+					TaskElement taskElement = findTaskElement(commitData, taskElementID);
+					if (taskElement != null) {
+						teDialog = new TaskElementDialog();
+						ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
+						Rectangle bounds = cell.getBounds();
+						teDialog.drawDialog(taskElement, bounds.x, bounds.y);
+					}
+				}
+				if (itemValue.equals(crViewMenu)) {
+					CodeChangeExtractionControl ccec = CodeChangeExtractionControl.getInstance();
+					ccec.visualizeSingleCommit(natTable, commitData.getCommitID(), commitData.getPrevCommitID(),
+							commitData.getTaskElementHashmap(), commitData.getTaskList());
 				}
 			}
 
@@ -102,27 +118,27 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 
 	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		
-		MouseEventMatcher matcher = new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON) {
 
+		MouseEventMatcher matcher = new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON) {
 
 			@Override
 			public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
 				if (super.matches(natTable, event, regionLabels)) {
 					columnPosition = natTable.getColumnPositionByX(event.x);
 					rowPosition = natTable.getRowPositionByY(event.y);
-				}else {
+					setMenu(natTable);
+				} else {
 					columnPosition = natTable.getColumnPositionByX(event.x);
 					rowPosition = natTable.getRowPositionByY(event.y);
+					setMenu(natTable);
 				}
 				return false;
 			}
 
 		};
-
 		uiBindingRegistry.registerMouseDownBinding(matcher, new CellPopupMenuAction(bodyMenu));
 	}
-	
+
 	private CommitData getCommitData(String commitID) {
 		for (CommitData commitData : commitDataList) {
 			String targetCommitID = commitData.getCommitID();
@@ -131,17 +147,31 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 		}
 		return null;
 	}
-	
+
 	private TaskElement findTaskElement(CommitData commitData, String taskElementID) {
 		List<List<TaskElement>> taskList = commitData.getTaskList();
 		for (List<TaskElement> task : taskList) {
 			for (TaskElement taskElement : task) {
 				String elementID = taskElement.getTaskElementID();
-				if(elementID.contains(taskElementID))
+				if (elementID.contains(taskElementID))
 					return taskElement;
 			}
 		}
 		return null;
-		
+
+	}
+
+	private void setMenu(NatTable natTable) {
+		ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
+		String cellValue = (String) cell.getDataValue();
+		MenuItem item = bodyMenu.getItem(0);
+		if (cellValue.equals(InsideClassChangeType.Added.name())
+				|| cellValue.equals(InsideClassChangeType.Modified.name())
+				|| cellValue.equals(InsideClassChangeType.Deleted.name())) {
+			item.setText(diffViewMenu);
+		}
+		if (cellValue.contains("Task")) {
+			item.setText(crViewMenu);
+		}
 	}
 }

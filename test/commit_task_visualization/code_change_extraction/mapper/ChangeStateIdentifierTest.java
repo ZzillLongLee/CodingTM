@@ -59,7 +59,7 @@ public class ChangeStateIdentifierTest {
 		Iterable<RevCommit> commits = commitChangesExtractor.extractCommits();
 
 		List<CodeSnapShot> codeChunkList = commitFilter.filterCommits(commits,
-				"712afd131d377f1462d96fe8e72e2efa0f33a12b");
+				"712afd131d377f1462d96fe8e72e2efa0f33a12b", 0);
 
 		for (CodeSnapShot codeChunk : codeChunkList) {
 			cfx.addChangedFiles(codeChunk, astSupport);

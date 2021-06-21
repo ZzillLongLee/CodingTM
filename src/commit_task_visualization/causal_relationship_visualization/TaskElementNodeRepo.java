@@ -1,4 +1,4 @@
-package commit_task_visualization.single_task_visualization;
+package commit_task_visualization.causal_relationship_visualization;
 
 import java.util.ArrayList;
 import java.util.List;

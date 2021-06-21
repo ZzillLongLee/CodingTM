@@ -1,17 +1,17 @@
-package commit_task_visualization.single_task_visualization.dialog;
+package commit_task_visualization.causal_relationship_visualization.dialog;
 
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import commit_task_visualization.causal_relationship_visualization.aggregationTypeCRVisualizer;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
 import commit_task_visualization.code_change_extraction.util.Constants;
-import commit_task_visualization.single_task_visualization.TaskVisualizer;
 
 
 public class StatementTableModel extends AbstractTableModel {
 
-	private static String[] columnNames = { "Deleted & Modified", "ADDED & Modified", "Caused To" };
+	private static String[] columnNames = { "Deleted & Modified", "Added & Modified", "Caused To" };
 
 	protected Class[] columnClasses = new Class[] { String.class, String.class, String.class };
 
@@ -95,10 +95,10 @@ public class StatementTableModel extends AbstractTableModel {
 	}
 
 	private String filterCommitID(String id) {
-		String curID = TaskVisualizer.curCommitID;
+		String curID = aggregationTypeCRVisualizer.curCommitID;
 		if(!curID.equals("") && id.contains(curID))
 			id.replace(curID, "");
-		String prevID = TaskVisualizer.prevCommitID;
+		String prevID = aggregationTypeCRVisualizer.prevCommitID;
 		if(!prevID.equals("") && id.contains(prevID))
 			id = id.replace(prevID, "");
 		return id;

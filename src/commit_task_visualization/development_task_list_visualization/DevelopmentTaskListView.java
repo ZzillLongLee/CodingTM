@@ -1,4 +1,4 @@
-package commit_task_visualization.multiple_task_visualization;
+package commit_task_visualization.development_task_list_visualization;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,15 +60,14 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import commit_task_visualization.CodeChangeExtractionControl;
-import commit_task_visualization.multiple_task_visualization.model.CommitTableDataGenerator;
-import commit_task_visualization.multiple_task_visualization.util.NatTableConstants;
-import commit_task_visualization.single_task_visualization.model.CommitData;
+import commit_task_visualization.causal_relationship_visualization.model.CommitData;
+import commit_task_visualization.development_task_list_visualization.model.CommitTableDataGenerator;
+import commit_task_visualization.development_task_list_visualization.util.NatTableConstants;
 
-public class MultipleCommitViewDialog extends Dialog {
-
-	private static final String ADD_LABEL = "ADD";
-	private static final String MODIFIED_LABEL = "MODIFIED";
-	private static final String DELETED_LABEL = "DELETE";
+public class DevelopmentTaskListView extends Dialog {
+	private static final String ADD_LABEL = "Added";
+	private static final String MODIFIED_LABEL = "Modified";
+	private static final String DELETED_LABEL = "Deleted";
 	private static final String DEFAULT_LABEL = "NONE";
 	private static final String TASK_LABEL = "taskLabel";
 
@@ -82,7 +81,7 @@ public class MultipleCommitViewDialog extends Dialog {
 	private List<CommitData> commitDataList;
 	private DataLayer bodyDataLayer;
 
-	public MultipleCommitViewDialog(Shell parentShell, List<CommitData> commitDataList) {
+	public DevelopmentTaskListView(Shell parentShell, List<CommitData> commitDataList) {
 		super(parentShell);
 		this.commitDataList = commitDataList;
 	}
@@ -182,6 +181,7 @@ public class MultipleCommitViewDialog extends Dialog {
 				int rowPosition = natTable.getRowPositionByY(e.y);
 				int columnIndex = natTable.getColumnPositionByX(e.x) - 1;
 				if (rowPosition == columnGroupPosition) {
+					Object value = natTable.getDataValueByPosition(columnIndex, rowPosition);
 					ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnIndex);
 					if (columnGroup != null) {
 						// add event to show the single commit view

@@ -23,7 +23,7 @@ public class CommitFilterTest {
 		CommitExtractor commitChangesExtractor = new CommitExtractor(gitRepositoryGen);
 		Iterable<RevCommit> commits = commitChangesExtractor.extractCommits();
 		CommitFilter commitFilter = new CommitFilter(gitRepositoryGen);
-		List<CodeSnapShot> codeChunkList = commitFilter.filterCommits(commits, "c7167f");
+		List<CodeSnapShot> codeChunkList = commitFilter.filterCommits(commits, "c7167f", 0);
 		for (CodeSnapShot codeChunk : codeChunkList) {
 			System.out.println(codeChunk.getCommitMsg());
 			System.out.println("Current Commit: "+ codeChunk.getCommit().getId().toString());

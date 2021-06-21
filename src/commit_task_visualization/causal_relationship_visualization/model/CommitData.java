@@ -1,4 +1,4 @@
-package commit_task_visualization.single_task_visualization.model;
+package commit_task_visualization.causal_relationship_visualization.model;
 
 import java.io.Serializable;
 import java.util.HashMap;

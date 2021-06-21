@@ -1,4 +1,4 @@
-package commit_task_visualization.single_task_visualization.tree_table;
+package commit_task_visualization.causal_relationship_visualization.tree_table;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,9 +16,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import commit_task_visualization.causal_relationship_visualization.VisualizationConstants;
+import commit_task_visualization.causal_relationship_visualization.dialog.TaskElementDialog;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
-import commit_task_visualization.single_task_visualization.VisualizationConstants;
-import commit_task_visualization.single_task_visualization.dialog.TaskElementDialog;
 import prefuse.data.Node;
 
 public class TreeTableView extends JScrollPane {

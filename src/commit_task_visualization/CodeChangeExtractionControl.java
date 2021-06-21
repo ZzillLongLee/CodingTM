@@ -21,6 +21,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import commit_task_visualization.causal_relationship_visualization.aggregationTypeCRVisualizer;
+import commit_task_visualization.causal_relationship_visualization.TaskVisualizerUtil;
+import commit_task_visualization.causal_relationship_visualization.model.CommitData;
 import commit_task_visualization.code_change_extraction.ast.ASTSupportSingleton;
 import commit_task_visualization.code_change_extraction.development_flow.DevelopmentFlowGenerator;
 import commit_task_visualization.code_change_extraction.development_flow.DuplicatedFlowFilter;
@@ -43,10 +46,7 @@ import commit_task_visualization.code_change_extraction.model.task_elements.Task
 import commit_task_visualization.code_change_extraction.util.CodeChunkPreprocessor;
 import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.code_change_extraction.util.TaskElementGenerater;
-import commit_task_visualization.multiple_task_visualization.MultipleCommitViewDialog;
-import commit_task_visualization.single_task_visualization.TaskVisualizer;
-import commit_task_visualization.single_task_visualization.TaskVisualizerUtil;
-import commit_task_visualization.single_task_visualization.model.CommitData;
+import commit_task_visualization.development_task_list_visualization.DevelopmentTaskListView;
 
 public class CodeChangeExtractionControl {
 
@@ -56,7 +56,7 @@ public class CodeChangeExtractionControl {
 	private static CommitFilter commitFilter;
 	private ChangedFileContentExtractor cfx;
 	private HashMap<String, List<String>> idSet;
-	private TaskVisualizer tv;
+	private aggregationTypeCRVisualizer tv;
 	private static final int deleted = 0;
 	private static final int added = 1;
 	private static final int modified = 2;
@@ -68,11 +68,11 @@ public class CodeChangeExtractionControl {
 		astSupport = ASTSupportSingleton.getInstance();
 	}
 
-	public List<CodeSnapShot> getCommitList(String keyword) {
+	public List<CodeSnapShot> getCommitList(int searchType, String keyword) {
 		List<CodeSnapShot> codecodeSnapShotList = null;
 		try {
 			Iterable<RevCommit> commits = commitChangesExtractor.extractCommits();
-			codecodeSnapShotList = commitFilter.filterCommits(commits, keyword);
+			codecodeSnapShotList = commitFilter.filterCommits(commits, keyword, searchType);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -195,7 +195,7 @@ public class CodeChangeExtractionControl {
 			}
 		}
 		if (hasZeroDiff != true) {
-			MultipleCommitViewDialog ntd = new MultipleCommitViewDialog(parent.getShell(), commitDataList);
+			DevelopmentTaskListView ntd = new DevelopmentTaskListView(parent.getShell(), commitDataList);
 			ntd.open();
 			
 		} else {
@@ -215,7 +215,7 @@ public class CodeChangeExtractionControl {
 
 	public void visualizeSingleCommit(Composite parent, String curCommitID, String prevCommitID,
 			HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList) {
-		tv = new TaskVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
+		tv = new aggregationTypeCRVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
 		JPanel panel = tv.showTask();
 		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
 		shell.setBounds(5, 5, 1300, 1400);
@@ -252,7 +252,7 @@ public class CodeChangeExtractionControl {
 		return ISTNACE;
 	}
 
-	public TaskVisualizer getTv() {
+	public aggregationTypeCRVisualizer getTv() {
 		return tv;
 	}
 

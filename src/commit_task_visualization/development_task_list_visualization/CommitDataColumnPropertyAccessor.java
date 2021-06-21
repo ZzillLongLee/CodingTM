@@ -1,4 +1,4 @@
-package commit_task_visualization.multiple_task_visualization;
+package commit_task_visualization.development_task_list_visualization;
 
 import java.util.LinkedHashMap;
 import java.util.List;

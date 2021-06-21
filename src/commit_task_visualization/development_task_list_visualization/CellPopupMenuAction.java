@@ -1,4 +1,4 @@
-package commit_task_visualization.multiple_task_visualization;
+package commit_task_visualization.development_task_list_visualization;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -16,7 +16,6 @@ public class CellPopupMenuAction implements IMouseAction {
 
 	@Override
 	public void run(NatTable natTable, MouseEvent event) {
-		System.out.println("hahahaha");
 	}
 
 }

@@ -1,4 +1,4 @@
-package commit_task_visualization.single_task_visualization;
+package commit_task_visualization.causal_relationship_visualization;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -36,6 +36,7 @@ import prefuse.action.layout.graph.ForceDirectedLayout;
 import prefuse.activity.Activity;
 import prefuse.controls.PanControl;
 import prefuse.controls.ZoomControl;
+import prefuse.data.Edge;
 import prefuse.data.Graph;
 import prefuse.data.Node;
 import prefuse.data.Table;
@@ -54,7 +55,7 @@ import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
 
-public class TaskVisualizer extends JPanel {
+public class aggregationTypeCRVisualizer extends JPanel {
 	public static final String GRAPH = "graph";
 	public static final String NODES = "graph.nodes";
 	public static final String EDGES = "graph.edges";
@@ -69,7 +70,7 @@ public class TaskVisualizer extends JPanel {
 	private Visualization m_vis;
 	private Display m_display;
 
-	public TaskVisualizer(HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList,
+	public aggregationTypeCRVisualizer(HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList,
 			String curCommitID, String prevCommitID) {
 		// initialize display and data
 		super(new BorderLayout());
@@ -138,6 +139,12 @@ public class TaskVisualizer extends JPanel {
 		m_vis.setInteractive(EDGES, null, false);
 		m_vis.setValue(NODES, null, VisualItem.SHAPE, new Integer(Constants.SHAPE_HEXAGON));
 		Iterator nodes = vg.nodes();
+		
+		Iterator edges = vg.edges();
+		while (edges.hasNext()) {
+			VisualItem item = (VisualItem) edges.next();
+			item.setBounds(0, 0, 30, 10);
+		}
 		// I have no idea why but I must not put the (Node)nodes.next(); here. Because,
 		// the node doesn't show up at view.
 		while (nodes.hasNext()) {

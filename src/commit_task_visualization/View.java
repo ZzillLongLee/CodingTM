@@ -20,6 +20,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
@@ -62,8 +63,8 @@ public class View extends ViewPart {
 	private List<CodeSnapShot> commitList;
 
 	private boolean isClicked = false;
-	
-	private boolean isRegen = false;
+
+	private String defaultString;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -215,16 +216,19 @@ public class View extends ViewPart {
 					if (gitRepositoryGen == null) {
 						String localProjectPath = localPath + "\\" + projectName;
 						gitRepositoryGen = new GitRepositoryGenerator(url, localProjectPath);
-						MessageBox dialog = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
-						dialog.setMessage("Git clone is done");
-						dialog.open();
+						ccec = CodeChangeExtractionControl.getInstance();
+						ccec.init(gitRepositoryGen);
+						commitList = ccec.getCommitList(Constants.ALL, Constants.EMPTY_STRING);
+						isClicked = true;
+						commitTableViewer.setInput(commitList);
+						commitTableViewer.getTable().redraw();
 					} else {
 						MessageBox msgDialog = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
-						msgDialog.setMessage("The git repository object is already exist.\n Do you want to remove git repository object?");
+						msgDialog.setMessage(
+								"The git repository object is already exist.\n Do you want to remove git repository object?");
 						int i = msgDialog.open();
-						if(i == SWT.OK) {
+						if (i == SWT.OK) {
 							gitRepositoryGen = null;
-							isRegen = true;
 						}
 					}
 				}
@@ -233,13 +237,17 @@ public class View extends ViewPart {
 	}
 
 	private void drawListSearchBar(Composite comp) {
-		String defaultString = "Please put the keyword in commit msg or commit number here.";
+		defaultString = "Please put the keyword in commit msg or commit number here.";
 		Label searchCommitLabel = new Label(comp, SWT.NONE);
 		FontDescriptor descriptor = FontDescriptor.createFrom(searchCommitLabel.getFont());
 		descriptor = descriptor.setStyle(SWT.BOLD);
 		searchCommitLabel.setFont(descriptor.createFont(searchCommitLabel.getDisplay()));
 
 		searchCommitLabel.setText("Search Commits");
+		Combo combo = new Combo(comp, SWT.READ_ONLY);
+		combo.setBounds(50, 50, 150, 65);
+		String items[] = { "Commit Msg", "Commit ID", "Commiter", "All"};
+		combo.setItems(items);
 		searchText = new Text(comp, SWT.BORDER | SWT.WRAP | SWT.MULTI);
 		searchText.setText(defaultString);
 		searchText.setSize(40, 10);
@@ -261,6 +269,7 @@ public class View extends ViewPart {
 
 			@Override
 			public void handleEvent(Event arg0) {
+				int searchType = combo.getSelectionIndex();
 				if (commitList != null)
 					commitList = null;
 				isClicked = false;
@@ -268,7 +277,7 @@ public class View extends ViewPart {
 					ccec = CodeChangeExtractionControl.getInstance();
 					ccec.init(gitRepositoryGen);
 					if (!searchText.getText().equals(defaultString)) {
-						commitList = ccec.getCommitList(searchText.getText());
+						commitList = ccec.getCommitList(searchType, searchText.getText());
 						isClicked = true;
 						commitTableViewer.setInput(commitList);
 						commitTableViewer.getTable().redraw();
@@ -276,32 +285,17 @@ public class View extends ViewPart {
 
 				} else {
 					Shell shell = comp.getShell();
-					if (gitRepositoryGen == null) {
+					if (gitRepositoryGen == null || ccec == null) {
 						MessageBox msgDialog = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
-						msgDialog.setMessage("The git repository isn't set.");
+						msgDialog.setMessage("The git repository setting is wrong");
 						msgDialog.open();
 					}
-					if (ccec == null) {
-						MessageBox msgDialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK | SWT.CANCEL);
-						msgDialog.setMessage("The Git Control module is null.");
-						msgDialog.open();
-					}
-					if (ccec != null && gitRepositoryGen != null && isRegen == false) {
+					if (ccec != null && gitRepositoryGen != null) {
 						if (!searchText.getText().equals(defaultString)) {
-							commitList = ccec.getCommitList(searchText.getText());
+							commitList = ccec.getCommitList(searchType, searchText.getText());
 							isClicked = true;
 							commitTableViewer.setInput(commitList);
 							commitTableViewer.getTable().redraw();
-						}
-					}
-					if (ccec != null && gitRepositoryGen != null && isRegen == true) {
-						if (!searchText.getText().equals(defaultString)) {
-							ccec.init(gitRepositoryGen);
-							commitList = ccec.getCommitList(searchText.getText());
-							isClicked = true;
-							commitTableViewer.setInput(commitList);
-							commitTableViewer.getTable().redraw();
-							isRegen = false;
 						}
 					}
 				}

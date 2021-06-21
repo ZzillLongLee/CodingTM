@@ -1,12 +1,12 @@
-package commit_task_visualization.single_task_visualization.dialog;
+package commit_task_visualization.causal_relationship_visualization.dialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import commit_task_visualization.causal_relationship_visualization.VisualizationConstants;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskMethod;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
-import commit_task_visualization.single_task_visualization.VisualizationConstants;
 import prefuse.util.ColorLib;
 import prefuse.visual.VisualItem;
 

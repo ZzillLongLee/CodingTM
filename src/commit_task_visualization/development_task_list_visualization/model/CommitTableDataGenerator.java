@@ -1,4 +1,4 @@
-package commit_task_visualization.multiple_task_visualization.model;
+package commit_task_visualization.development_task_list_visualization.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,12 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import commit_task_visualization.causal_relationship_visualization.model.CommitData;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskAttribute;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskMethod;
 import commit_task_visualization.code_change_extraction.util.Constants;
-import commit_task_visualization.multiple_task_visualization.util.NatTableConstants;
-import commit_task_visualization.single_task_visualization.model.CommitData;
+import commit_task_visualization.development_task_list_visualization.util.NatTableConstants;
 
 public class CommitTableDataGenerator {
 

@@ -31,7 +31,7 @@ public class ChangedFileExtractorTest {
 		
 		ChangedFileContentExtractor cfx = new ChangedFileContentExtractor(gitRepositoryGen);
 		
-		List<CodeSnapShot> codeChunkList = commitFilter.filterCommits(commits, "712afd131d377f1462d96fe8e72e2efa0f33a12b");
+		List<CodeSnapShot> codeChunkList = commitFilter.filterCommits(commits, "712afd131d377f1462d96fe8e72e2efa0f33a12b", 0);
 		for (CodeSnapShot codeChunk : codeChunkList) {
 			RevCommit commit = codeChunk.getPrevCommit();
 			HashMap<DiffEntry, String> diffContents = codeChunk.getDiffContents();

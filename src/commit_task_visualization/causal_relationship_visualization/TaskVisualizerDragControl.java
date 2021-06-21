@@ -1,4 +1,4 @@
-package commit_task_visualization.single_task_visualization;
+package commit_task_visualization.causal_relationship_visualization;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,9 +12,9 @@ import java.util.Iterator;
 import javax.swing.Box;
 import javax.swing.SwingUtilities;
 
+import commit_task_visualization.causal_relationship_visualization.dialog.TaskElementDialog;
+import commit_task_visualization.causal_relationship_visualization.tree_table.TreeTableView;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
-import commit_task_visualization.single_task_visualization.dialog.TaskElementDialog;
-import commit_task_visualization.single_task_visualization.tree_table.TreeTableView;
 import prefuse.Display;
 import prefuse.controls.ControlAdapter;
 import prefuse.data.Node;
@@ -36,7 +36,7 @@ class TaskVisualizerDragControl extends ControlAdapter {
 	protected boolean dragged;
 	private TaskElementDialog teDialog;
 	private final Font defaultFont = FontLib.getFont("SansSerif", 10);
-	private TaskVisualizer taskVisualizer;
+	private aggregationTypeCRVisualizer taskVisualizer;
 	private TreeTableView ttv;
 	private Box treeTableBox;
 	private Box defaultTreeTableBox;
@@ -50,7 +50,7 @@ class TaskVisualizerDragControl extends ControlAdapter {
 	 * @param prevCommitID
 	 * @param curCommitID
 	 */
-	public TaskVisualizerDragControl(TaskVisualizer taskVisualizer, Box defaultTreeTableBox) {
+	public TaskVisualizerDragControl(aggregationTypeCRVisualizer taskVisualizer, Box defaultTreeTableBox) {
 		this.defaultTreeTableBox = defaultTreeTableBox;
 		ttv = new TreeTableView();
 		teDialog = new TaskElementDialog();

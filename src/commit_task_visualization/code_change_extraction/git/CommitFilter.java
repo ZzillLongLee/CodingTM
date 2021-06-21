@@ -34,42 +34,44 @@ public class CommitFilter {
 		commitDiffGenerator = new CommitDiffGenerator(gitRepositoryGenerator);
 	}
 
-	public List<CodeSnapShot> filterCommits(Iterable<RevCommit> commits, String keyWord)
+	public List<CodeSnapShot> filterCommits(Iterable<RevCommit> commits, String keyWord, int searchType)
 			throws IOException, GitAPIException {
 		int size = 0;
 		List<CodeSnapShot> codeChunkList = new ArrayList<CodeSnapShot>();
 		for (RevCommit commit : commits) {
 			String commitMsg = commit.getFullMessage();
 			List<DiffEntry> diffs;
-			if (commit.getId().toString().contains(keyWord)) {
-				System.out.println("Commit MSG:" + commitMsg);
-				RevCommit[] prevCommit = commit.getParents();
-				if (prevCommit.length != 0) {
-					diffs = generateDiff(prevCommit[0], commit);
-					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					if(diffContents.size() == 0)
-						size++;
-					codeChunkList.add(new CodeSnapShot(prevCommit[0], commit, diffContents));
-				}
-			} else if (commitMsg.contains(keyWord)) {
-				System.out.println("Commit MSG:" + commitMsg);
-				RevCommit[] prevCommit = commit.getParents();
-				if (prevCommit.length != 0) {
-					diffs = generateDiff(prevCommit[0], commit);
-					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(prevCommit[0], commit, diffContents));
-				}
-			} else if (keyWord.equals(Constants.KEY_WORD_EMPTY)) {
-				RevCommit[] prevCommit = commit.getParents();
-				if (prevCommit.length != 0) {
-					diffs = generateDiff(prevCommit[0], commit);
-					HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
-					codeChunkList.add(new CodeSnapShot(prevCommit[0], commit, diffContents));
+			if (searchType == commit_task_visualization.Constants.COMMIT_MSG) {
+				if (commit.getFullMessage().toString().contains(keyWord)) {
+					generateCodeSnapshot(codeChunkList, commit);
 				}
 			}
+			if (searchType == commit_task_visualization.Constants.COMMIT_ID) {
+				if (commit.getId().toString().contains(keyWord)) {
+					generateCodeSnapshot(codeChunkList, commit);
+				}
+			}
+			if (searchType == commit_task_visualization.Constants.COMMITER) {
+				if (commit.getCommitterIdent().getName().equals(keyWord)) {
+					generateCodeSnapshot(codeChunkList, commit);
+				}
+			} else if (searchType == commit_task_visualization.Constants.ALL) {
+				generateCodeSnapshot(codeChunkList, commit);
+			}
 		}
-		System.out.println("This size of commit has no java files"+size);
+		System.out.println("This size of commit has no java files" + size);
 		return codeChunkList;
+	}
+
+	private void generateCodeSnapshot(List<CodeSnapShot> codeChunkList, RevCommit commit)
+			throws IOException, GitAPIException {
+		List<DiffEntry> diffs;
+		RevCommit[] prevCommit = commit.getParents();
+		if (prevCommit.length != 0) {
+			diffs = generateDiff(prevCommit[0], commit);
+			HashMap<DiffEntry, String> diffContents = commitDiffGenerator.generateDiffContents(diffs);
+			codeChunkList.add(new CodeSnapShot(prevCommit[0], commit, diffContents));
+		}
 	}
 
 	private List<DiffEntry> generateDiff(RevCommit prevCommit, RevCommit commit) throws IOException, GitAPIException {

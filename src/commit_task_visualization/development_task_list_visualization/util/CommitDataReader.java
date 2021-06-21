@@ -1,4 +1,4 @@
-package commit_task_visualization.multiple_task_visualization.util;
+package commit_task_visualization.development_task_list_visualization.util;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,8 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import commit_task_visualization.multiple_task_visualization.model.CommitTableDataGenerator;
-import commit_task_visualization.single_task_visualization.model.CommitData;
+import commit_task_visualization.causal_relationship_visualization.model.CommitData;
+import commit_task_visualization.development_task_list_visualization.model.CommitTableDataGenerator;
 
 public class CommitDataReader {
 

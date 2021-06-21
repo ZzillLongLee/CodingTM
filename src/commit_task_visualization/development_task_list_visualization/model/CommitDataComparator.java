@@ -1,4 +1,4 @@
-package commit_task_visualization.multiple_task_visualization.model;
+package commit_task_visualization.development_task_list_visualization.model;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
