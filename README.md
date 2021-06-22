@@ -14,7 +14,8 @@ This following figure shows the architecture of the CodingTM:
 
 As you can see, this CodingTM composed of 4 sequential views for a developer to comprehend source code.
 
-1.Commit History View allows a developer to fetch a list of commits from the Github code repository in chronicle order and search a specific commit from the list of commits. This following figure shows the view with a comment for the general sequence of use.
+### 1. Commit History View
+Commit History View allows a developer to fetch a list of commits from the Github code repository in chronicle order and search a specific commit from the list of commits. This following figure shows the view with a comment for the general sequence of use.
 ![CommitHistoryView](https://user-images.githubusercontent.com/24516888/122871895-a1d4bd00-d36a-11eb-9de5-dc6ab13073d6.png)
 
 First, it starts with cloning a project from the code repository (see 1 in the figure) and showing all commits in the commit history table.
@@ -23,21 +24,25 @@ Third, a developer can select commits through the checkbox and requests the syst
 
 ![DevelopmentTaskListView](https://user-images.githubusercontent.com/24516888/122871897-a1d4bd00-d36a-11eb-85bf-a0878736fffb.png)
 
-2. Development Task List View plays a role in showing development tasks of the selected commits in chronological order, and it also shows the task elements and their change type for
+### 2. Development Task List View
+
+Development Task List View plays a role in showing development tasks of the selected commits in chronological order, and it also shows the task elements and their change type for
 each task. The following figure below presents the development task list view.
 
 First, class name and task element columns shows identified task elements(method and attribute) in selected commits.
 Second, two set of columns grouped with commit id shows the task element's change type and specific task.
 Third, user can check identified development task by selecting the task in the specific task element(select changetype and right-click for popup menu and click the item in popup menu) like 1 in the figure. And also user can check how task element is changed and connected with other task element by selcting a change type of specific task element(select changetype and right-click for popup menu and click the item in popup menu) like 2 in the figure.
 
-3. Causal Relationship View shows identified development tasks by going into a specific point of commit.
+### 3. Development Task List View
+Causal Relationship View shows identified development tasks by going into a specific point of commit.
 This figure presents Causal Relationship View, showing tasks in an outer rounded rectangle and task elements in each task. The edge between task elements indicates a causal
 relationship. The change type of each element is expressed in three different colors, where the green, yellow and red colors.
 ![causal relationship view](https://user-images.githubusercontent.com/24516888/122871901-a26d5380-d36a-11eb-8e69-e2e750153552.png)
 
 When selecting a specific task element as expressed in 1 , CodingTM shows the causal relationship table that helps one to explicitly navigate the causal relationships. Also, when a developer selects one of the task elements in the table, it shows Task Element Diff View for understanding the specific modified part of the task elements.
 
-4. Task Element Diff View shows which parts of a task element are updated in the statement level of detail and which task elements have causal relationships with the task
+### 4. Task Element Diff View
+Task Element Diff View shows which parts of a task element are updated in the statement level of detail and which task elements have causal relationships with the task
 element as shown the figure below.
 ![DiffView](https://user-images.githubusercontent.com/24516888/122871892-a13c2680-d36a-11eb-832f-aac7bfd9e54b.png)
 This view is interactive with a user. When a developer selects a specific statement as designated at the 1 in the figure, this view highlights the updated code snippets in the Code View for intuitively supporting source code comprehension. Also, the selection makes the view updated to show other task elements that have causal relationships with the selected task elements.
