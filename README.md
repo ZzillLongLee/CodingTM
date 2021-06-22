@@ -59,6 +59,6 @@ This view is interactive with a user. When a developer selects a specific statem
 2. install JavaSE-1.8
 3. install nattable (help-install new software - (http://download.eclipse.org/nattable/releases/1.6.0/repository/)
 
-## Getting Started /
+## Getting Started
 1. import codingTM as General -- existing projects into workspace.
 2. run project.
