@@ -1,4 +1,4 @@
-CodingTM: Development Task Visualization for SW Code Comprehension
+# CodingTM: Development Task Visualization for SW Code Comprehension
 
 This is a development task visualization tool for SW Code Comprehension.
 The development task is the coding activity that implements new feature, fixing bugs and refactoring, it is formed by code changes(task element) in the level of method and attribute and statement.
@@ -43,12 +43,12 @@ element as shown the figure below.
 This view is interactive with a user. When a developer selects a specific statement as designated at the 1 in the figure, this view highlights the updated code snippets in the Code View for intuitively supporting source code comprehension. Also, the selection makes the view updated to show other task elements that have causal relationships with the selected task elements.
 
 
-Pre Requirements
+### Prerequisites
 
 1. install eclipse
 2. install JavaSE-1.8
 3. install nattable (help-install new software - (http://download.eclipse.org/nattable/releases/1.6.0/repository/) )
 
-How to start
+## Getting Started /
 1. import codingTM as General -- existing projects into workspace.
 2. run project.
