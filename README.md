@@ -3,7 +3,7 @@
 This is a development task visualization tool for SW Code Comprehension.
 The development task is the coding activity that implements new feature, fixing bugs and refactoring, it is formed by code changes(task element) in the level of method and attribute and statement.
 This figure shows how development task is formed
-![DevelopmentTaskIdentification](https://user-images.githubusercontent.com/24516888/122871898-a26d5380-d36a-11eb-829a-e0ac4cdb9fd3.png)
+![DevelopmentTaskIdentification](https://user-images.githubusercontent.com/24516888/122871898-a26d5380-d36a-11eb-829a-e0ac4cdb9fd3.png){: width="100" height="100"}
 In this figure the method 1 is added and method 2 and 3 is modified in diff, also method 2 and 3 is use the method 1 in their own statement. So, we connect this relationship as a causal relationship, which can explain the reason of changed code like the dotted blue line. Based on these causal relationships, we formed the development task by grouping causal relationships. If you want to know the detail of identifying development task, please check these two research paper we published(TODO: ).
 
 CodingTM visualize these development task in each of commits in the commit history like the time machine.
