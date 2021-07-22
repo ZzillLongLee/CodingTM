@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import commit_task_visualization.causal_relationship_visualization.aggregationTypeCRVisualizer;
+import commit_task_visualization.causal_relationship_visualization.aggregation_view.AggregationTypeCRVisualizer;
 import commit_task_visualization.code_change_extraction.merge_process.MergeProcessor;
 import commit_task_visualization.code_change_extraction.merge_process.TaskTreeGenerator;
 import commit_task_visualization.code_change_extraction.model.task_elements.Task;
@@ -36,7 +36,7 @@ public class TaskVisualizerTest {
 		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
 		 List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
 		
-		aggregationTypeCRVisualizer tv = new aggregationTypeCRVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
+		AggregationTypeCRVisualizer tv = new AggregationTypeCRVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
         JPanel jPanel = tv.showTask();
         jPanel.setVisible(true);
 	}

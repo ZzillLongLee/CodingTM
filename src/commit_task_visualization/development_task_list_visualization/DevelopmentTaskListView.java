@@ -174,53 +174,6 @@ public class DevelopmentTaskListView extends Dialog {
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new SingleClickSortConfiguration());
 		natTable.addConfiguration(new CellMenuConfiguration(natTable, commitDataList, columnGroupModel));
-		natTable.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				int rowPosition = natTable.getRowPositionByY(e.y);
-				int columnIndex = natTable.getColumnPositionByX(e.x) - 1;
-				if (rowPosition == columnGroupPosition) {
-					Object value = natTable.getDataValueByPosition(columnIndex, rowPosition);
-					ColumnGroup columnGroup = columnGroupModel.getColumnGroupByIndex(columnIndex);
-					if (columnGroup != null) {
-						// add event to show the single commit view
-						String commitID = columnGroup.getName();
-						CommitData commitData = getCommitData(commitID);
-						if (commitData != null) {
-							CodeChangeExtractionControl ccec = CodeChangeExtractionControl.getInstance();
-							ccec.visualizeSingleCommit(container, commitData.getCommitID(), commitData.getPrevCommitID(),
-									commitData.getTaskElementHashmap(), commitData.getTaskList());
-						}else {
-							MessageBox msgDialog = new MessageBox(container.getShell(), SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
-							msgDialog.setMessage("The Commit Data is not exist");
-							msgDialog.open();
-						}
-					}
-				}
-			}
-
-			@Override
-			public void mouseDown(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void mouseUp(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-			}
-
-			private CommitData getCommitData(String commitID) {
-				for (CommitData commitData : commitDataList) {
-					String targetCommitID = commitData.getCommitID();
-					if (targetCommitID.equals(commitID))
-						return commitData;
-				}
-				return null;
-			}
-			
-		});
-
 		natTable.addConfiguration(new AbstractRegistryConfiguration() {
 
 			@Override

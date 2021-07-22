@@ -61,6 +61,8 @@ public class View extends ViewPart {
 	private Text localPathText;
 
 	private List<CodeSnapShot> commitList;
+	
+	private List<CodeSnapShot> allCommitList;
 
 	private boolean isClicked = false;
 
@@ -68,7 +70,7 @@ public class View extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-
+		allCommitList = new ArrayList<CodeSnapShot>();
 		parent.setLayout(new GridLayout(1, false));
 		parent.setSize(700, 265);
 

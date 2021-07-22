@@ -1,4 +1,4 @@
-package commit_task_visualization.causal_relationship_visualization;
+package commit_task_visualization.causal_relationship_visualization.aggregation_view;
 
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;

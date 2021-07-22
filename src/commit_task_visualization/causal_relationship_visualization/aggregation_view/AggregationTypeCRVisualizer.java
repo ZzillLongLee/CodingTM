@@ -1,4 +1,4 @@
-package commit_task_visualization.causal_relationship_visualization;
+package commit_task_visualization.causal_relationship_visualization.aggregation_view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,6 +22,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 
+import commit_task_visualization.causal_relationship_visualization.TaskElementNodeRepo;
+import commit_task_visualization.causal_relationship_visualization.TaskVisualizerUtil;
+import commit_task_visualization.causal_relationship_visualization.VisualizationConstants;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElementUtil;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
@@ -55,7 +58,7 @@ import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
 
-public class aggregationTypeCRVisualizer extends JPanel {
+public class AggregationTypeCRVisualizer extends JPanel {
 	public static final String GRAPH = "graph";
 	public static final String NODES = "graph.nodes";
 	public static final String EDGES = "graph.edges";
@@ -68,13 +71,13 @@ public class aggregationTypeCRVisualizer extends JPanel {
 	public static String curCommitID = "";
 	public static String prevCommitID = "";
 	private Visualization m_vis;
-	private Display m_display;
+	private Display m_Display;
 
-	public aggregationTypeCRVisualizer(HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList,
+	public AggregationTypeCRVisualizer(HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList,
 			String curCommitID, String prevCommitID) {
 		// initialize display and data
 		super(new BorderLayout());
-		m_vis = new Visualization();
+		this.m_vis = new Visualization();
 		this.curCommitID = curCommitID;
 		this.prevCommitID = prevCommitID;
 		initDataGroups(taskElementHashmap, taskList);
@@ -115,17 +118,17 @@ public class aggregationTypeCRVisualizer extends JPanel {
 		defaultTreeTableBox.add(new JScrollPane());
 		defaultTreeTableBox.setVisible(true);
 		add(defaultTreeTableBox, BorderLayout.SOUTH);
-
+		
 		// set up the display
-		m_display = new Display(m_vis);
-		m_display.setPreferredSize(new Dimension(750, 800));
-		m_display.pan(500, 500);
-		m_display.setHighQuality(true);
-		m_display.addControlListener(new TaskVisualizerDragControl(this, defaultTreeTableBox));
-		m_display.addControlListener(new ZoomControl());
-		m_display.addControlListener(new PanControl());
+		m_Display = new Display(m_vis);
+		m_Display.setPreferredSize(new Dimension(800, 700));
+		m_Display.pan(500, 500);
+		m_Display.setHighQuality(true);
+		m_Display.addControlListener(new AggregationViewDragControl(this, defaultTreeTableBox));
+		m_Display.addControlListener(new ZoomControl());
+		m_Display.addControlListener(new PanControl());
 
-		add(m_display, BorderLayout.CENTER);
+		add(m_Display, BorderLayout.CENTER);
 		// set things running
 		m_vis.run("layout");
 	}
@@ -234,5 +237,5 @@ public class aggregationTypeCRVisualizer extends JPanel {
 		panel.add(this);
 		return panel;
 	}
-
+	
 }

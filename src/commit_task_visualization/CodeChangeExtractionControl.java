@@ -21,8 +21,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import commit_task_visualization.causal_relationship_visualization.aggregationTypeCRVisualizer;
+import commit_task_visualization.causal_relationship_visualization.CausalRelationshipVisualizer;
 import commit_task_visualization.causal_relationship_visualization.TaskVisualizerUtil;
+import commit_task_visualization.causal_relationship_visualization.aggregation_view.AggregationTypeCRVisualizer;
 import commit_task_visualization.causal_relationship_visualization.model.CommitData;
 import commit_task_visualization.code_change_extraction.ast.ASTSupportSingleton;
 import commit_task_visualization.code_change_extraction.development_flow.DevelopmentFlowGenerator;
@@ -47,6 +48,9 @@ import commit_task_visualization.code_change_extraction.util.CodeChunkPreprocess
 import commit_task_visualization.code_change_extraction.util.Constants;
 import commit_task_visualization.code_change_extraction.util.TaskElementGenerater;
 import commit_task_visualization.development_task_list_visualization.DevelopmentTaskListView;
+import commit_task_visualization.development_task_list_visualization.util.TaskFinder;
+import commit_task_visualization.topological_sort.CausalRelationshipGraph;
+import commit_task_visualization.topological_sort.CausalRelationshipOrderer;
 
 public class CodeChangeExtractionControl {
 
@@ -56,7 +60,7 @@ public class CodeChangeExtractionControl {
 	private static CommitFilter commitFilter;
 	private ChangedFileContentExtractor cfx;
 	private HashMap<String, List<String>> idSet;
-	private aggregationTypeCRVisualizer tv;
+	private AggregationTypeCRVisualizer tv;
 	private static final int deleted = 0;
 	private static final int added = 1;
 	private static final int modified = 2;
@@ -138,50 +142,24 @@ public class CodeChangeExtractionControl {
 		mp.updateCausalRel(taskElementHashmap, taskElementRepo);
 		TaskTreeGenerator ttg = new TaskTreeGenerator(taskElementRepo);
 		List<List<TaskElement>> taskList = ttg.buildTaskTree(curTask, prevTask);
-		return new CommitData(curCommitID, prevCommitID, taskList, taskElementHashmap);
+
+		CausalRelationshipOrderer crOrderer = new CausalRelationshipOrderer();
+		List<CausalRelationshipGraph> graphs = crOrderer.generate(taskList, taskElementRepo);
+
+		return new CommitData(curCommitID, prevCommitID, taskList, taskElementHashmap, graphs);
 	}
 
 	public void visualizeTask(CodeSnapShot codeSnapShot, Composite parent) {
-		String curCommitID = codeSnapShot.getCommit().getId().toString();
-		String prevCommitID = codeSnapShot.getPrevCommit().getId().toString();
 		CommitData cd = generateTask(codeSnapShot);
-		List<List<TaskElement>> taskList = cd.getTaskList();
-		HashMap<String, TaskElement> taskElementHashmap = cd.getTaskElementHashmap();
-		try {
-			FileWriter myWriter = new FileWriter("C:\\Users\\Taeyoung Kim\\Desktop\\RQ1&2\\RQ2\\CodingTM\\"+curCommitID+".txt");
-			for (int i = 0; i < taskList.size(); i++) {
-				int taskNum = i+1;
-				myWriter.write("___________________________Task"+ taskNum + "________________________________\n");
-				List<TaskElement> task = taskList.get(i);
-				for (TaskElement taskElement : task) {
-					String taskIdWithoutCommitID = TaskVisualizerUtil.getIDwithoutCommitID(taskElement.getTaskElementID());
-					myWriter.write(taskIdWithoutCommitID+"\n");
-				}
-				myWriter.write("______________________________________________________________________________\n");
-			}
-			for (Entry<String, TaskElement> taskElementHash : taskElementHashmap.entrySet()) {
-				TaskElement te = taskElementHash.getValue();
-				List<TaskElement> causedTo = te.getCausedTo();
-				for (TaskElement causedToTE : causedTo) {
-					String causedToString = TaskVisualizerUtil.getIDwithoutCommitID(causedToTE.getTaskElementID());
-					String taskString = TaskVisualizerUtil.getIDwithoutCommitID(te.getTaskElementID());
-					myWriter.write(causedToString+" ----> "+taskString+"\n");
-				}
-			}
-			myWriter.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		visualizeSingleCommit(parent, curCommitID, prevCommitID, taskElementHashmap, taskList);
+		visualizeCausalRelationshipView(parent, cd, null, CausalRelationshipVisualizer.aggregationView);
 	}
 
 	public void visulizeMultipleTask(Composite parent, Object[] checkedElements) {
 		StringBuilder sb = new StringBuilder();
 		List<CommitData> commitDataList = new ArrayList<CommitData>();
 		boolean hasZeroDiff = false;
-		for (int i = checkedElements.length-1; i >= 0; i--) {
-			CodeSnapShot codeSnapShot = (CodeSnapShot)checkedElements[i];
+		for (int i = checkedElements.length - 1; i >= 0; i--) {
+			CodeSnapShot codeSnapShot = (CodeSnapShot) checkedElements[i];
 			int diffSize = codeSnapShot.getDiffContents().size();
 			if (diffSize != 0) {
 				CommitData cd = generateTask(codeSnapShot);
@@ -197,7 +175,7 @@ public class CodeChangeExtractionControl {
 		if (hasZeroDiff != true) {
 			DevelopmentTaskListView ntd = new DevelopmentTaskListView(parent.getShell(), commitDataList);
 			ntd.open();
-			
+
 		} else {
 			MessageBox msgDialog = new MessageBox(parent.getShell(), SWT.ICON_INFORMATION | SWT.OK | SWT.CANCEL);
 			msgDialog.setMessage("These Following Commits: " + sb.toString() + "doesn't have java files.");
@@ -213,17 +191,26 @@ public class CodeChangeExtractionControl {
 		}
 	}
 
-	public void visualizeSingleCommit(Composite parent, String curCommitID, String prevCommitID,
-			HashMap<String, TaskElement> taskElementHashmap, List<List<TaskElement>> taskList) {
-		tv = new aggregationTypeCRVisualizer(taskElementHashmap, taskList, curCommitID, prevCommitID);
-		JPanel panel = tv.showTask();
+	public void visualizeCausalRelationshipView(Composite parent, CommitData cd, String targetTaskElementID,
+			int viewType) {
+		String curCommitID = cd.getCommitID();
+		CausalRelationshipVisualizer crVisualizer = null;
+		if (viewType == CausalRelationshipVisualizer.aggregationView) {
+			crVisualizer = new CausalRelationshipVisualizer(cd, targetTaskElementID,
+					CausalRelationshipVisualizer.aggregationView);
+		}
+		if (viewType == CausalRelationshipVisualizer.treeView) {
+			crVisualizer = new CausalRelationshipVisualizer(cd, targetTaskElementID,
+					CausalRelationshipVisualizer.treeView);
+		}
+		JPanel panel = crVisualizer.showTask();
 		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
-		shell.setBounds(5, 5, 1300, 1400);
+		shell.setBounds(0, 0, 1000, 900);
 		shell.setText("Task View |" + curCommitID);
 		System.setProperty("sun.awt.noerasebackground", "true");
 		Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.NO_BACKGROUND);
 		java.awt.Frame frame = SWT_AWT.new_Frame(composite);
-		composite.setBounds(5, 5, 1300, 1400);
+		composite.setBounds(0, 0, 1000, 900);
 		frame.add(panel);
 		Display display = shell.getDisplay();
 		display.asyncExec(new Runnable() {
@@ -252,7 +239,7 @@ public class CodeChangeExtractionControl {
 		return ISTNACE;
 	}
 
-	public aggregationTypeCRVisualizer getTv() {
+	public AggregationTypeCRVisualizer getTv() {
 		return tv;
 	}
 

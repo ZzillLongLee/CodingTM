@@ -66,21 +66,6 @@ public class TaskElementRepo {
 		return casualRe;
 	}
 
-//	public HashMap<String, TaskElement> getElements(HashMap<String, TaskElement> causalRelationship) {
-//		HashMap<String, TaskElement> casualRe = new HashMap<String, TaskElement>();
-//		for (Entry<String, TaskElement> causalRelMap : causalRelationship.entrySet()) {
-//			TaskElement casualValue = causalRelMap.getValue();
-//			TaskElement te = getTaskElement(causalRelMap.getKey());
-//			if (te == null && casualValue.getChangedType().equals(InsideClassChangeType.MODIFIED.name())) {
-//				te = getMergedElement(casualValue);
-//				casualRe.put(te.taskElementID, te);
-//			} else {
-//				casualRe.put(te.taskElementID, te);
-//			}
-//		}
-//		return casualRe;
-//	}
-
 	public TaskElement getMergedElement(TaskElement casualValue) {
 		String casualValueID = casualValue.getTaskElementID();
 

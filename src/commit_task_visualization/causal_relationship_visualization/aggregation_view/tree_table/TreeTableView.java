@@ -1,4 +1,4 @@
-package commit_task_visualization.causal_relationship_visualization.tree_table;
+package commit_task_visualization.causal_relationship_visualization.aggregation_view.tree_table;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,8 +16,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import commit_task_visualization.causal_relationship_visualization.CausalRelationshipVisualizer;
 import commit_task_visualization.causal_relationship_visualization.VisualizationConstants;
-import commit_task_visualization.causal_relationship_visualization.dialog.TaskElementDialog;
+import commit_task_visualization.causal_relationship_visualization.task_element_diff_visualization.TaskElementDiffDialog;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import prefuse.data.Node;
 
@@ -25,7 +26,7 @@ public class TreeTableView extends JScrollPane {
 
 	private CausalLinkTreeGenerator causedToTreeGen;
 	private CausalLinkTreeGenerator cuasedByTreeGen;
-	private TaskElementDialog teDialog;
+	private TaskElementDiffDialog teDialog;
 
 	public TreeTableView() {
 		// TODO Auto-generated constructor stub
@@ -92,7 +93,7 @@ public class TreeTableView extends JScrollPane {
 	}
 
 	private void setTreeTableListener(JTree tree) {
-		teDialog = new TaskElementDialog();
+		teDialog = new TaskElementDiffDialog();
 		tree.addMouseListener(new MouseAdapter() {
 			 public void mousePressed(MouseEvent e) {
 				 int clickCount = e.getClickCount();
@@ -104,7 +105,7 @@ public class TreeTableView extends JScrollPane {
 							TaskElement causedToTaskElement = causedToTreeGen.getTaskElement(selectedNode);
 							if (causedToTaskElement != null) {
 								try {
-									teDialog.drawDialog(causedToTaskElement, nodeBounds.x, nodeBounds.y);
+									teDialog.drawDialog(causedToTaskElement, nodeBounds.x, nodeBounds.y, CausalRelationshipVisualizer.aggregationView);
 								} catch (Exception e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
@@ -113,7 +114,7 @@ public class TreeTableView extends JScrollPane {
 							TaskElement causedByTaskElement = cuasedByTreeGen.getTaskElement(selectedNode);
 							if (causedByTaskElement != null) {
 								try {
-									teDialog.drawDialog(causedByTaskElement, nodeBounds.x, nodeBounds.y);
+									teDialog.drawDialog(causedByTaskElement, nodeBounds.x, nodeBounds.y, CausalRelationshipVisualizer.aggregationView);
 								} catch (Exception e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();

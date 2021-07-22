@@ -1,4 +1,4 @@
-package commit_task_visualization.causal_relationship_visualization.dialog;
+package commit_task_visualization.causal_relationship_visualization.task_element_diff_visualization;
 
 import java.util.ArrayList;
 import java.util.List;

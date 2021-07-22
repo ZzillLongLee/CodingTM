@@ -1,10 +1,10 @@
-package commit_task_visualization.causal_relationship_visualization.dialog;
+package commit_task_visualization.causal_relationship_visualization.task_element_diff_visualization;
 
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import commit_task_visualization.causal_relationship_visualization.aggregationTypeCRVisualizer;
+import commit_task_visualization.causal_relationship_visualization.aggregation_view.AggregationTypeCRVisualizer;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
 import commit_task_visualization.code_change_extraction.util.Constants;
 
@@ -95,10 +95,10 @@ public class StatementTableModel extends AbstractTableModel {
 	}
 
 	private String filterCommitID(String id) {
-		String curID = aggregationTypeCRVisualizer.curCommitID;
+		String curID = AggregationTypeCRVisualizer.curCommitID;
 		if(!curID.equals("") && id.contains(curID))
 			id.replace(curID, "");
-		String prevID = aggregationTypeCRVisualizer.prevCommitID;
+		String prevID = AggregationTypeCRVisualizer.prevCommitID;
 		if(!prevID.equals("") && id.contains(prevID))
 			id = id.replace(prevID, "");
 		return id;

@@ -1,4 +1,4 @@
-package commit_task_visualization.causal_relationship_visualization.tree_table;
+package commit_task_visualization.causal_relationship_visualization.aggregation_view.tree_table;
 
 import java.util.Iterator;
 import javax.swing.tree.DefaultMutableTreeNode;

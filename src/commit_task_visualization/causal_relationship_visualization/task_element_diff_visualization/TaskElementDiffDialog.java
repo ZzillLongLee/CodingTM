@@ -1,23 +1,17 @@
-package commit_task_visualization.causal_relationship_visualization.dialog;
+package commit_task_visualization.causal_relationship_visualization.task_element_diff_visualization;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -31,13 +25,13 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import commit_task_visualization.causal_relationship_visualization.CausalRelationshipVisualizer;
 import commit_task_visualization.causal_relationship_visualization.TaskVisualizerUtil;
 import commit_task_visualization.causal_relationship_visualization.VisualizationConstants;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskStatement;
-import prefuse.visual.VisualItem;
 
-public class TaskElementDialog {
+public class TaskElementDiffDialog {
 
 	private JPanel listPane;
 	private RSyntaxTextArea pastCodeView;
@@ -55,7 +49,7 @@ public class TaskElementDialog {
 	private final String MODIFIED_ChangeType = "(Modified)";
 	private final String ADDED_ChangeType = "(Added)";
 
-	public TaskElementDialog() {
+	public TaskElementDiffDialog() {
 		teDialog = new JFrame();
 		teDialog.setPreferredSize(new Dimension(900, 600));
 		teDialog.setMinimumSize(new Dimension(650, 450));
@@ -150,7 +144,7 @@ public class TaskElementDialog {
 //		jtable.add(scrollPane);
 	}
 
-	public void drawDialog(TaskElement te, int x, int y) {
+	public void drawDialog(TaskElement te, int x, int y, int viewType) {
 		TaskElementUtil teUtil = new TaskElementUtil();
 		teUtil.setTaskElement(te);
 		String taskElementLabel = TaskVisualizerUtil.getLabel(teUtil.getElementID());
@@ -240,7 +234,8 @@ public class TaskElementDialog {
 			teDialog.remove(jtable);
 		}
 		teDialog.add(listPane);
-		teDialog.setLocation((int) x, (int) y);
+		if(viewType == CausalRelationshipVisualizer.aggregationView)
+			teDialog.setLocation((int) x, (int) y);
 		teDialog.setVisible(true);
 		teDialog.revalidate();
 		teDialog.pack();

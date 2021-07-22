@@ -25,8 +25,9 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 
 import commit_task_visualization.CodeChangeExtractionControl;
-import commit_task_visualization.causal_relationship_visualization.dialog.TaskElementDialog;
+import commit_task_visualization.causal_relationship_visualization.CausalRelationshipVisualizer;
 import commit_task_visualization.causal_relationship_visualization.model.CommitData;
+import commit_task_visualization.causal_relationship_visualization.task_element_diff_visualization.TaskElementDiffDialog;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import commit_task_visualization.code_change_extraction.state_enum.InsideClassChangeType;
 
@@ -37,8 +38,9 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 	private int rowPosition;
 	private List<CommitData> commitDataList;
 	private ColumnGroupModel columnGroupModel;
+	private final int classNameColumn = 1;
 	private final int taskElementColumn = 2;
-	private TaskElementDialog teDialog;
+	private TaskElementDiffDialog teDialog;
 	private final String diffViewMenu = "show Task Element Diff View";
 	private final String crViewMenu = "show Causal Relationship View";
 
@@ -87,21 +89,23 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 				String itemValue = bodyMenu.getItem(0).getText();
 				String commitID = columnGroup.getName();
 				CommitData commitData = getCommitData(commitID);
+				ILayerCell taskElementCell = natTable.getCellByPosition(taskElementColumn, rowPosition);
+				String taskElementID = (String) taskElementCell.getDataValue();
+				TaskElement taskElement = findTaskElement(commitData, taskElementID, natTable);
 				if (itemValue.equals(diffViewMenu)) {
-					ILayerCell taskElementCell = natTable.getCellByPosition(taskElementColumn, rowPosition);
-					String taskElementID = (String) taskElementCell.getDataValue();
-					TaskElement taskElement = findTaskElement(commitData, taskElementID);
 					if (taskElement != null) {
-						teDialog = new TaskElementDialog();
+						teDialog = new TaskElementDiffDialog();
 						ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 						Rectangle bounds = cell.getBounds();
-						teDialog.drawDialog(taskElement, bounds.x, bounds.y);
+						teDialog.drawDialog(taskElement, bounds.x, bounds.y, CausalRelationshipVisualizer.aggregationView);
 					}
 				}
 				if (itemValue.equals(crViewMenu)) {
-					CodeChangeExtractionControl ccec = CodeChangeExtractionControl.getInstance();
-					ccec.visualizeSingleCommit(natTable, commitData.getCommitID(), commitData.getPrevCommitID(),
-							commitData.getTaskElementHashmap(), commitData.getTaskList());
+					if (taskElement != null) {
+						CodeChangeExtractionControl ccec = CodeChangeExtractionControl.getInstance();
+						ccec.visualizeCausalRelationshipView(natTable, commitData, taskElement.getTaskElementID(),
+								CausalRelationshipVisualizer.treeView);
+					}
 				}
 			}
 
@@ -148,12 +152,14 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 		return null;
 	}
 
-	private TaskElement findTaskElement(CommitData commitData, String taskElementID) {
+	private TaskElement findTaskElement(CommitData commitData, String taskElementID, NatTable natTable) {
+		ILayerCell classNameCell = natTable.getCellByPosition(classNameColumn, rowPosition);
+		String className = (String) classNameCell.getDataValue();
 		List<List<TaskElement>> taskList = commitData.getTaskList();
 		for (List<TaskElement> task : taskList) {
 			for (TaskElement taskElement : task) {
 				String elementID = taskElement.getTaskElementID();
-				if (elementID.contains(taskElementID))
+				if (elementID.contains(taskElementID) && elementID.contains(className))
 					return taskElement;
 			}
 		}

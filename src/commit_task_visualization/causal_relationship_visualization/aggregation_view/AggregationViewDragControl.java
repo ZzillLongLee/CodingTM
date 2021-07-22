@@ -1,4 +1,4 @@
-package commit_task_visualization.causal_relationship_visualization;
+package commit_task_visualization.causal_relationship_visualization.aggregation_view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,8 +12,9 @@ import java.util.Iterator;
 import javax.swing.Box;
 import javax.swing.SwingUtilities;
 
-import commit_task_visualization.causal_relationship_visualization.dialog.TaskElementDialog;
-import commit_task_visualization.causal_relationship_visualization.tree_table.TreeTableView;
+import commit_task_visualization.causal_relationship_visualization.VisualizationConstants;
+import commit_task_visualization.causal_relationship_visualization.aggregation_view.tree_table.TreeTableView;
+import commit_task_visualization.causal_relationship_visualization.task_element_diff_visualization.TaskElementDiffDialog;
 import commit_task_visualization.code_change_extraction.model.task_elements.TaskElement;
 import prefuse.Display;
 import prefuse.controls.ControlAdapter;
@@ -28,15 +29,15 @@ import prefuse.visual.tuple.TableEdgeItem;
 /**
  * Interactive drag control that is "aggregate-aware"
  */
-class TaskVisualizerDragControl extends ControlAdapter {
+class AggregationViewDragControl extends ControlAdapter {
 
 	private VisualItem activeItem;
 	protected Point2D down = new Point2D.Double();
 	protected Point2D temp = new Point2D.Double();
 	protected boolean dragged;
-	private TaskElementDialog teDialog;
+	private TaskElementDiffDialog teDialog;
 	private final Font defaultFont = FontLib.getFont("SansSerif", 10);
-	private aggregationTypeCRVisualizer taskVisualizer;
+	private AggregationTypeCRVisualizer taskVisualizer;
 	private TreeTableView ttv;
 	private Box treeTableBox;
 	private Box defaultTreeTableBox;
@@ -50,10 +51,10 @@ class TaskVisualizerDragControl extends ControlAdapter {
 	 * @param prevCommitID
 	 * @param curCommitID
 	 */
-	public TaskVisualizerDragControl(aggregationTypeCRVisualizer taskVisualizer, Box defaultTreeTableBox) {
+	public AggregationViewDragControl(AggregationTypeCRVisualizer taskVisualizer, Box defaultTreeTableBox) {
 		this.defaultTreeTableBox = defaultTreeTableBox;
 		ttv = new TreeTableView();
-		teDialog = new TaskElementDialog();
+		teDialog = new TaskElementDiffDialog();
 		this.taskVisualizer = taskVisualizer;
 	}
 
