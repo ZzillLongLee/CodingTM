@@ -5,7 +5,7 @@ The development task is the coding activity that implements new feature, fixing 
 
 <p align="center"><img src="https://user-images.githubusercontent.com/24516888/122871898-a26d5380-d36a-11eb-829a-e0ac4cdb9fd3.png" width="60%">
 
-In this figure, method 1 is added and methods 2 and 3 are modified in the diff, also methods 2 and 3 use the method 1 in their own statement. So, we connect this relationship as a causal relationship, which can explain the reason of changed code like the dotted blue line. Based on these causal relationships, we formed the development task by grouping causal relationships. If you want to know the detail of identifying development task, please check these two research paper we published(TODO: ).
+In this figure, method 1 is added and methods 2 and 3 are modified in the diff, also methods 2 and 3 use the method 1 in their own statement. So, we connect this relationship as a causal relationship, which can explain the reason of changed code like the dotted blue line. Based on these causal relationships, we formed the development task by grouping causal relationships. If you want to know identifying development task and its detail, please check the research paper we published at VISSOFT2021.
 
 CodingTM visualize these development task in each of commits in the commit history like the time machine.
 
