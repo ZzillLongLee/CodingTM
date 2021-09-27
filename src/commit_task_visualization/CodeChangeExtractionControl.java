@@ -199,9 +199,9 @@ public class CodeChangeExtractionControl {
 			crVisualizer = new CausalRelationshipVisualizer(cd, targetTaskElementID,
 					CausalRelationshipVisualizer.aggregationView);
 		}
-		if (viewType == CausalRelationshipVisualizer.treeView) {
+		if (viewType == CausalRelationshipVisualizer.singleTaskView) {
 			crVisualizer = new CausalRelationshipVisualizer(cd, targetTaskElementID,
-					CausalRelationshipVisualizer.treeView);
+					CausalRelationshipVisualizer.singleTaskView);
 		}
 		JPanel panel = crVisualizer.showTask();
 		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);

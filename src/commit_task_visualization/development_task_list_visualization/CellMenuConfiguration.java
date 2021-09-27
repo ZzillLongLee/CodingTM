@@ -104,7 +104,7 @@ public class CellMenuConfiguration extends AbstractUiBindingConfiguration {
 					if (taskElement != null) {
 						CodeChangeExtractionControl ccec = CodeChangeExtractionControl.getInstance();
 						ccec.visualizeCausalRelationshipView(natTable, commitData, taskElement.getTaskElementID(),
-								CausalRelationshipVisualizer.treeView);
+								CausalRelationshipVisualizer.singleTaskView);
 					}
 				}
 			}

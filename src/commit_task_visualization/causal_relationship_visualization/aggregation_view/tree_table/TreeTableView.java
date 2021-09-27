@@ -44,7 +44,7 @@ public class TreeTableView extends JScrollPane {
 		causedToBox.setBorder(VisualizationConstants.BorderType_raisedetched);
 		JLabel causedToLabel = new JLabel();
 		causedToLabel.setPreferredSize(new Dimension(60, 30));
-		causedToLabel.setText("Caused To: \r\n" + "The elements referenced by this code ");
+		causedToLabel.setText("It caused to: \r\n" + "The element referenced by this code ");
 		causedToLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		causedToBox.add(causedToLabel);
 		JScrollPane causedTottv = showTreeTableView(node, VisualizationConstants.CAUSEDTO);
@@ -56,7 +56,7 @@ public class TreeTableView extends JScrollPane {
 		CausedByBox.setBorder(VisualizationConstants.BorderType_raisedetched);
 		JLabel causedByLabel = new JLabel();
 		causedByLabel.setPreferredSize(new Dimension(60, 30));
-		causedByLabel.setText("Caused By: \r\n" + "Elements referencing this code");
+		causedByLabel.setText("It is caused by: \r\n" + "Elements referencing this code");
 		causedByLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		CausedByBox.add(causedByLabel);
 		JScrollPane causedByttv = showTreeTableView(node, VisualizationConstants.CAUSEDBY);

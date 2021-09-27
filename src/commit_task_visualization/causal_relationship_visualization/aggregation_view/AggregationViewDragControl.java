@@ -38,9 +38,11 @@ class AggregationViewDragControl extends ControlAdapter {
 	private TaskElementDiffDialog teDialog;
 	private final Font defaultFont = FontLib.getFont("SansSerif", 10);
 	private AggregationTypeCRVisualizer taskVisualizer;
+	private SingleTaskAggregationViewCRVis singleTaskVisualizer;
 	private TreeTableView ttv;
 	private Box treeTableBox;
 	private Box defaultTreeTableBox;
+	private boolean isSingleTaskVis;
 
 	/**
 	 * Creates a new drag control that issues repaint requests as an item is
@@ -56,6 +58,15 @@ class AggregationViewDragControl extends ControlAdapter {
 		ttv = new TreeTableView();
 		teDialog = new TaskElementDiffDialog();
 		this.taskVisualizer = taskVisualizer;
+		this.isSingleTaskVis = false;
+	}
+	
+	public AggregationViewDragControl(SingleTaskAggregationViewCRVis taskVisualizer, Box defaultTreeTableBox) {
+		this.defaultTreeTableBox = defaultTreeTableBox;
+		ttv = new TreeTableView();
+		teDialog = new TaskElementDiffDialog();
+		this.singleTaskVisualizer = taskVisualizer;
+		this.isSingleTaskVis = true;
 	}
 
 	/**
@@ -120,7 +131,10 @@ class AggregationViewDragControl extends ControlAdapter {
 			defaultTreeTableBox.removeAll();
 			defaultTreeTableBox.setVisible(false);
 			treeTableBox = ttv.buildTreeTableView(treeTableBox, node);
-			taskVisualizer.add(treeTableBox, BorderLayout.SOUTH);
+			if(this.isSingleTaskVis == true)
+				singleTaskVisualizer.add(treeTableBox, BorderLayout.SOUTH);
+			else
+				taskVisualizer.add(treeTableBox, BorderLayout.SOUTH);
 		}
 	}
 
